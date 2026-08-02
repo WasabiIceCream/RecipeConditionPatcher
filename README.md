@@ -1,5 +1,7 @@
 # RecipeConditionPatcher
 
+[![License: MIT](https://img.shields.io/github/license/WasabiIceCream/RecipeConditionPatcher)](LICENSE)
+
 Automatically patches every crafting recipe (Constructible Object record)
 in your game with whatever conditions you want. The included default
 configuration adds matching perk requirements based on a recipe's
