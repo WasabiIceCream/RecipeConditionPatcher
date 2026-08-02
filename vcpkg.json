@@ -1,0 +1,11 @@
+{
+  "name": "recipe-condition-patcher",
+  "version-string": "2.0.0",
+  "dependencies": [
+    "nlohmann-json",
+    "spdlog",
+    "rsm-binary-io",
+    "directxtk",
+    "rapidcsv"
+  ]
+}
