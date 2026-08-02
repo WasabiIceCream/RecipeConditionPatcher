@@ -538,3 +538,11 @@ to something else if you need different ordering.
   patched like any other recipe, they just can't be named.
   Set Log Verbosity to "Warnings Only" or "Errors Only" in the Settings tab if you
   only want the final summary line and don't need the full per-recipe detail.
+
+## License
+
+MIT, see [LICENSE](LICENSE). `extern/fxc2/` is vendored and modified from
+[mozilla/fxc2](https://github.com/mozilla/fxc2) and is licensed separately
+under the Mozilla Public License 2.0; see `extern/fxc2/LICENSE` for its
+terms. `extern/fxc2/d3dcompiler_47.dll` is Microsoft's own redistributable
+binary, not covered by either license above.
