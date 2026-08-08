@@ -81,10 +81,14 @@ namespace RPP
 	// entirely opt-in. This is the RUNTIME loader, used by the patch pass
 	// (RecipePatcher.cpp). The in-game Classifiers tab (UIClassifiersEditor.cpp)
 	// does NOT go through this or ClassifierGroup/ClassifierRule/
-	// ClassifierPredicate: it needs to preserve the setGlobal/conditions
-	// distinction this loader merges away, and needs a reverse JSON
-	// serializer this type doesn't have, so it has its own parallel
-	// editable model in ClassifierGroupEditor.h/ClassifierPredicateEditor.h.
+	// ClassifierPredicate: it needs editable char-buffer fields (not
+	// resolved runtime state), a way to keep an over-complex predicate's
+	// original JSON around read-only instead of forcing it through the
+	// block/row editor, and a reverse JSON serializer this type doesn't
+	// have, so it has its own parallel editable model in
+	// ClassifierGroupEditor.h/ClassifierPredicateEditor.h. It still reads
+	// the "setGlobal" shorthand below on load (expanding it into ordinary
+	// conditions), it just never writes it back out.
 	//
 	// Two shorthands beyond the plain schema described above, both purely
 	// authoring convenience (identical to spelling them out longhand):

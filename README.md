@@ -257,8 +257,15 @@ The full default set (all use the `HasPerk` function):
 | `DLC2ChitinPlate` | `ElvenSmithing` | Dragonborn (Chitin armor) |
 | `DLC2NetchLeather` | `ElvenSmithing` | Dragonborn |
 | `DLC2OreStalhrim` | `EbonySmithing` | Dragonborn |
-| `ccBGSSSE025_IngotAmber` | `GlassSmithing` | Creation Club ("Saints & Seducers") |
-| `ccBGSSSE025_IngotMadness` | `EbonySmithing` | Creation Club ("Saints & Seducers") |
+| `ccBGSSSE025_IngotAmber` | `DaedricSmithing` | Creation Club ("Saints & Seducers") |
+| `ccBGSSSE025_IngotMadness` | `DaedricSmithing` | Creation Club ("Saints & Seducers") |
+
+The same file also ships a `classifiers` group that mirrors this table by
+the produced item's own material keyword (`ArmorMaterialEbony`,
+`WeapMaterialDaedric`, and so on) rather than the recipe's required
+ingredient, covering recipes that make an item of one of these materials
+without literally requiring the matching ingot/ore/heart. See
+[Classifiers](#classifiers) below.
 
 ## Recipe overrides
 
@@ -479,10 +486,13 @@ As...** / **Create New** file-picker row as the Mappings tab, at the top.
   A predicate too deeply/oddly nested for this two-level shape (rare; see
   [Classifiers](#classifiers)) is shown read-only instead, with a note to
   edit the file by hand; the editor never touches it on save.
-- Each rule has a **Set Global(s)** list (the common case: adds
-  `GetGlobalValue(name) == 1` per name) and a collapsible **Advanced
-  conditions** section for anything that needs more (reuses the same
-  condition-fields widget as the Mappings tab).
+- Each rule has one **Conditions** list, reusing the same condition-fields
+  widget as the Mappings tab. A plain global check is just a condition here
+  too: Function = `GetGlobalValue`, Param 1 = the global's EditorID, Value =
+  True. The `setGlobal` shorthand described under
+  [Classifiers](#classifiers) is for hand-edited JSON: loading a file that
+  uses it expands each entry into an ordinary condition here, and saving
+  always writes the expanded form.
 
 ### ⚠️ "Apply Now" and turning things off mid-session
 

@@ -6,20 +6,21 @@
 namespace RPP::ClassifierEditor
 {
 	// One rule: a match predicate (see ClassifierPredicateEditor.h) plus
-	// two independently-editable ways to specify what it adds: `setGlobal`
-	// (an add/remove list of Global names, the common case: each becomes
-	// GetGlobalValue(name) == 1) and `advancedConditions` (the rare case
-	// that needs something GetGlobalValue-with-a-plain-1-comparison can't
-	// express, e.g. an OR-chained gate or a Global-vs-Global comparison.
-	// Reuses UI::EditableCondition/RenderConditionFields verbatim, same
-	// widget the Mappings tab already uses). Both can be non-empty at
-	// once; on save, `advancedConditions` are written first, `setGlobal`
-	// appended after, matching Classifiers.cpp's own parser order.
+	// what it adds, as one uniform list of conditions (reuses
+	// UI::EditableCondition/RenderConditionFields verbatim, same widget
+	// the Mappings tab already uses). `setGlobal` is still read on load
+	// (each name becomes a GetGlobalValue(name) == 1 condition, appended
+	// after anything already in `conditions`, matching Classifiers.cpp's
+	// own parser order) so existing hand-authored files using the
+	// shorthand still load correctly, but it's never written back out:
+	// the editor always saves the expanded `conditions` form. The
+	// shorthand still exists for hand-editing (see Classifiers.h); the
+	// in-game editor just doesn't special-case it, one condition list is
+	// simpler than a widget that offers two ways to say the same thing.
 	struct EditableClassifierRule
 	{
 		EditableMatch match;
-		std::vector<std::array<char, 128>> setGlobals;
-		std::vector<UI::EditableCondition> advancedConditions;
+		std::vector<UI::EditableCondition> conditions;
 		std::array<char, 256> comment{};
 	};
 

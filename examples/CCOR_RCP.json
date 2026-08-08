@@ -17,17 +17,32 @@
           "match": {
             "edidContains": "arrow"
           },
-          "setGlobal": "CCO_WeapAmmoArrowRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapAmmoArrowRecipes"
+            }
+          ]
         },
         {
           "match": {
             "edidContains": "bolt"
           },
-          "setGlobal": "CCO_WeapAmmoBoltRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapAmmoBoltRecipes"
+            }
+          ]
         },
         {
           "comment": "default for any other ammo",
-          "setGlobal": "CCO_WeapAmmoOtherRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapAmmoOtherRecipes"
+            }
+          ]
         }
       ]
     },
@@ -85,7 +100,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_ArmorClothingRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ArmorClothingRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -98,7 +118,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_ArmorHeavyRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ArmorHeavyRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -111,7 +136,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_ArmorLightRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ArmorLightRecipes"
+            }
+          ]
         }
       ]
     },
@@ -185,7 +215,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_ClothingCloakRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ClothingCloakRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -210,41 +245,76 @@
               }
             ]
           },
-          "setGlobal": "CCO_ClothingPouchRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ClothingPouchRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "WAF_ClothingAccessories"
           },
-          "setGlobal": "CCO_ClothingMiscAccessories"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ClothingMiscAccessories"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "ClothingBody"
           },
-          "setGlobal": "CCO_ClothingRobeRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ClothingRobeRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "ClothingFeet"
           },
-          "setGlobal": "CCO_ClothingBootRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ClothingBootRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "ClothingHands"
           },
-          "setGlobal": "CCO_ClothingGlovesRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ClothingGlovesRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "ClothingHead"
           },
-          "setGlobal": "CCO_ClothingHoodRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ClothingHoodRecipes"
+            }
+          ]
         },
         {
           "comment": "default for any other clothing",
-          "setGlobal": "CCO_ClothingMiscAccessories"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ClothingMiscAccessories"
+            }
+          ]
         }
       ]
     },
@@ -295,7 +365,12 @@
           "match": {
             "keyword": "ArmorBoots"
           },
-          "setGlobal": "CCO_ArmorBootRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ArmorBootRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -310,29 +385,54 @@
               }
             ]
           },
-          "setGlobal": "CCO_ArmorCuirassRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ArmorCuirassRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "ArmorGauntlets"
           },
-          "setGlobal": "CCO_ArmorGauntletRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ArmorGauntletRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "ArmorHelmet"
           },
-          "setGlobal": "CCO_ArmorHelmetRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ArmorHelmetRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "ArmorShield"
           },
-          "setGlobal": "CCO_ArmorShieldRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ArmorShieldRecipes"
+            }
+          ]
         },
         {
           "comment": "default for any other non-clothing armor slot",
-          "setGlobal": "CCO_ClothingMiscAccessories"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ClothingMiscAccessories"
+            }
+          ]
         }
       ]
     },
@@ -397,7 +497,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_ClothingCloakRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_ClothingCloakRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -410,19 +515,34 @@
               }
             ]
           },
-          "setGlobal": "CCO_JewelryBraceletRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_JewelryBraceletRecipes"
+            }
+          ]
         },
         {
           "match": {
             "fullContains": "Earring"
           },
-          "setGlobal": "CCO_JewelryEarringRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_JewelryEarringRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "ClothingCirclet"
           },
-          "setGlobal": "CCO_JewelryCircletRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_JewelryCircletRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -444,17 +564,32 @@
               }
             ]
           },
-          "setGlobal": "CCO_JewelryNecklaceRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_JewelryNecklaceRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "ClothingRing"
           },
-          "setGlobal": "CCO_JewelryRingRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_JewelryRingRecipes"
+            }
+          ]
         },
         {
           "comment": "default for any other jewelry",
-          "setGlobal": "CCO_JewelryOtherRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_JewelryOtherRecipes"
+            }
+          ]
         }
       ]
     },
@@ -483,7 +618,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_WeapStaffRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapStaffRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -508,7 +648,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_WeapOtherRangedRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapOtherRangedRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -550,7 +695,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_WeapOther2HandRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapOther2HandRecipes"
+            }
+          ]
         },
         {
           "comment": "upstream CCOR v2.4 checks HasKeyword against its own global names here (CCO_WeapDaggerRecipes etc.), which can never match any real keyword. Fixed here to check the actual WeapType* keywords those globals are meant to gate on",
@@ -596,7 +746,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_WeapOther1HandRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapOther1HandRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -611,55 +766,100 @@
               }
             ]
           },
-          "setGlobal": "CCO_WeapBattleaxeRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapBattleaxeRecipes"
+            }
+          ]
         },
         {
           "match": {
             "fullContains": "Crossbow"
           },
-          "setGlobal": "CCO_WeapCrossbowRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapCrossbowRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "WeapTypeBow"
           },
-          "setGlobal": "CCO_WeapBowRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapBowRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "WeapTypeDagger"
           },
-          "setGlobal": "CCO_WeapDaggerRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapDaggerRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "WeapTypeGreatsword"
           },
-          "setGlobal": "CCO_WeapGreatswordRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapGreatswordRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "WeapTypeMace"
           },
-          "setGlobal": "CCO_WeapMaceRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapMaceRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "WeapTypeSword"
           },
-          "setGlobal": "CCO_WeapSwordRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapSwordRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "WeapTypeWarAxe"
           },
-          "setGlobal": "CCO_WeapWarAxeRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapWarAxeRecipes"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "WeapTypeWarhammer"
           },
-          "setGlobal": "CCO_WeapWarhammerRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_WeapWarhammerRecipes"
+            }
+          ]
         }
       ]
     },
@@ -702,7 +902,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_MiscSuppliesRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_MiscSuppliesRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -721,7 +926,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_MiscDecorRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_MiscDecorRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -740,7 +950,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_MiscGiftRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_MiscGiftRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -762,7 +977,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_MiscToolRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_MiscToolRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -781,11 +1001,21 @@
               }
             ]
           },
-          "setGlobal": "CCO_MiscSurvivalRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_MiscSurvivalRecipes"
+            }
+          ]
         },
         {
           "comment": "default for any other misc item",
-          "setGlobal": "CCO_MiscOtherRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_MiscOtherRecipes"
+            }
+          ]
         }
       ]
     },
@@ -815,7 +1045,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Argonian"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Argonian"
+            }
+          ]
         },
         {
           "match": {
@@ -831,7 +1066,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Khajiit"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Khajiit"
+            }
+          ]
         },
         {
           "match": {
@@ -874,7 +1114,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Akaviri"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Akaviri"
+            }
+          ]
         },
         {
           "match": {
@@ -902,7 +1147,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Redguard"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Redguard"
+            }
+          ]
         },
         {
           "match": {
@@ -918,7 +1168,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Breton"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Breton"
+            }
+          ]
         },
         {
           "match": {
@@ -931,7 +1186,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_SnowElf"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_SnowElf"
+            }
+          ]
         },
         {
           "match": {
@@ -993,7 +1253,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Dwemer"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Dwemer"
+            }
+          ]
         },
         {
           "match": {
@@ -1021,7 +1286,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Bosmer"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Bosmer"
+            }
+          ]
         },
         {
           "match": {
@@ -1055,7 +1325,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Dunmer"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Dunmer"
+            }
+          ]
         },
         {
           "match": {
@@ -1071,7 +1346,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_FactionThalmor"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_FactionThalmor"
+            }
+          ]
         },
         {
           "match": {
@@ -1108,7 +1388,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Altmer"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Altmer"
+            }
+          ]
         },
         {
           "match": {
@@ -1121,7 +1406,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Orsimer"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Orsimer"
+            }
+          ]
         },
         {
           "match": {
@@ -1161,7 +1451,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Nord"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Nord"
+            }
+          ]
         },
         {
           "match": {
@@ -1220,7 +1515,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Nord"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Nord"
+            }
+          ]
         },
         {
           "match": {
@@ -1248,7 +1548,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Imperial"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Imperial"
+            }
+          ]
         },
         {
           "match": {
@@ -1264,7 +1569,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_FactionStormcloak"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_FactionStormcloak"
+            }
+          ]
         },
         {
           "match": {
@@ -1277,7 +1587,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_FactionNightingale"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_FactionNightingale"
+            }
+          ]
         },
         {
           "match": {
@@ -1299,7 +1614,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Daedra"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Daedra"
+            }
+          ]
         },
         {
           "match": {
@@ -1327,7 +1647,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_FactionThievesGuild"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_FactionThievesGuild"
+            }
+          ]
         },
         {
           "match": {
@@ -1352,7 +1677,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_FactionDarkBrotherhood"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_FactionDarkBrotherhood"
+            }
+          ]
         },
         {
           "match": {
@@ -1371,7 +1701,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_FactionDawnguard"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_FactionDawnguard"
+            }
+          ]
         },
         {
           "match": {
@@ -1393,7 +1728,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Vampire"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Vampire"
+            }
+          ]
         },
         {
           "match": {
@@ -1409,7 +1749,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_FactionBlades"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_FactionBlades"
+            }
+          ]
         },
         {
           "match": {
@@ -1462,7 +1807,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_FactionCompanions"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_FactionCompanions"
+            }
+          ]
         },
         {
           "match": {
@@ -1475,7 +1825,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_FactionMagesGuild"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_FactionMagesGuild"
+            }
+          ]
         },
         {
           "match": {
@@ -1491,13 +1846,23 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeStyle_FactionGuards"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_FactionGuards"
+            }
+          ]
         },
         {
           "match": {
             "keyword": "WAF_MaterialFaction"
           },
-          "setGlobal": "CCO_CategoryForgeStyle_FactionOther"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_FactionOther"
+            }
+          ]
         },
         {
           "comment": "default for anything not covered by a specific culture/faction",
@@ -1506,7 +1871,12 @@
               "edidContains": "MenuOption"
             }
           },
-          "setGlobal": "CCO_CategoryForgeStyle_Misc"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Misc"
+            }
+          ]
         }
       ]
     },
@@ -1577,7 +1947,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Ebony"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Ebony"
+            }
+          ]
         },
         {
           "match": {
@@ -1599,7 +1974,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Dragon"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Dragon"
+            }
+          ]
         },
         {
           "match": {
@@ -1612,7 +1992,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Gold"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Gold"
+            }
+          ]
         },
         {
           "comment": "verbatim from CCOR: glass-named vendor clutter (e.g. glass bottles) is filed as a tool recipe, not a forge material, upstream",
@@ -1626,7 +2011,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_MiscToolRecipes"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_MiscToolRecipes"
+            }
+          ]
         },
         {
           "match": {
@@ -1648,7 +2038,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Glass"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Glass"
+            }
+          ]
         },
         {
           "match": {
@@ -1667,7 +2062,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Stalhrim"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Stalhrim"
+            }
+          ]
         },
         {
           "match": {
@@ -1686,7 +2086,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Quicksilver"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Quicksilver"
+            }
+          ]
         },
         {
           "match": {
@@ -1705,7 +2110,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Silver"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Silver"
+            }
+          ]
         },
         {
           "match": {
@@ -1724,7 +2134,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Copper"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Copper"
+            }
+          ]
         },
         {
           "match": {
@@ -1737,7 +2152,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Calcinium"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Calcinium"
+            }
+          ]
         },
         {
           "match": {
@@ -1750,7 +2170,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Galatite"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Galatite"
+            }
+          ]
         },
         {
           "match": {
@@ -1769,7 +2194,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Dwarven"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Dwarven"
+            }
+          ]
         },
         {
           "match": {
@@ -1791,7 +2221,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Moonstone"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Moonstone"
+            }
+          ]
         },
         {
           "match": {
@@ -1816,7 +2251,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Orichalcum"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Orichalcum"
+            }
+          ]
         },
         {
           "match": {
@@ -1844,7 +2284,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Chitin"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Chitin"
+            }
+          ]
         },
         {
           "match": {
@@ -1860,7 +2305,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Bone"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Bone"
+            }
+          ]
         },
         {
           "match": {
@@ -1879,7 +2329,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Bonemold"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Bonemold"
+            }
+          ]
         },
         {
           "match": {
@@ -1892,7 +2347,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Wood"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Wood"
+            }
+          ]
         },
         {
           "match": {
@@ -1905,7 +2365,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Stone"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Stone"
+            }
+          ]
         },
         {
           "match": {
@@ -1930,7 +2395,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Iron"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Iron"
+            }
+          ]
         },
         {
           "match": {
@@ -1949,7 +2419,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Steel"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Steel"
+            }
+          ]
         },
         {
           "match": {
@@ -1962,7 +2437,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Leather"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Leather"
+            }
+          ]
         },
         {
           "match": {
@@ -1987,7 +2467,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Hide"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Hide"
+            }
+          ]
         },
         {
           "match": {
@@ -2000,7 +2485,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Arcane"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Arcane"
+            }
+          ]
         },
         {
           "match": {
@@ -2022,7 +2512,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Cloth"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Cloth"
+            }
+          ]
         },
         {
           "comment": "default for anything not covered by a specific material",
@@ -2031,7 +2526,12 @@
               "edidContains": "MenuOption"
             }
           },
-          "setGlobal": "CCO_CategoryForgeMaterial_Misc"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Misc"
+            }
+          ]
         }
       ]
     },
@@ -2042,7 +2542,12 @@
       ],
       "rules": [
         {
-          "setGlobal": "CCO_CategoryForgeMaterialOR_Skyforge"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterialOR_Skyforge"
+            }
+          ]
         }
       ]
     },
@@ -2102,7 +2607,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_MODSupported"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_MODSupported"
+            }
+          ]
         }
       ]
     },
@@ -2159,7 +2669,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_MODSupported"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_MODSupported"
+            }
+          ]
         }
       ]
     },
@@ -2173,7 +2688,12 @@
           "match": {
             "recipeEdidContains": "Breakdown"
           },
-          "setGlobal": "CCO_OptionBreakdownEquipmentatSmelter"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_OptionBreakdownEquipmentatSmelter"
+            }
+          ]
         }
       ]
     },
@@ -2187,13 +2707,23 @@
           "match": {
             "fullContains": "Iron"
           },
-          "setGlobal": "CCO_CategorySmelter_Iron"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Iron"
+            }
+          ]
         },
         {
           "match": {
             "fullContains": "Steel"
           },
-          "setGlobal": "CCO_CategorySmelter_Steel"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Steel"
+            }
+          ]
         },
         {
           "match": {
@@ -2206,7 +2736,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategorySmelter_Corundum"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Corundum"
+            }
+          ]
         },
         {
           "match": {
@@ -2219,7 +2754,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategorySmelter_Dwarven"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Dwarven"
+            }
+          ]
         },
         {
           "match": {
@@ -2232,13 +2772,23 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategorySmelter_Charcoal"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Charcoal"
+            }
+          ]
         },
         {
           "match": {
             "fullContains": "Gold"
           },
-          "setGlobal": "CCO_CategorySmelter_Gold"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Gold"
+            }
+          ]
         },
         {
           "match": {
@@ -2251,31 +2801,56 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategorySmelter_Quicksilver"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Quicksilver"
+            }
+          ]
         },
         {
           "match": {
             "fullContains": "Silver"
           },
-          "setGlobal": "CCO_CategorySmelter_Silver"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Silver"
+            }
+          ]
         },
         {
           "match": {
             "fullContains": "Moonstone"
           },
-          "setGlobal": "CCO_CategorySmelter_Moonstone"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Moonstone"
+            }
+          ]
         },
         {
           "match": {
             "fullContains": "Orichalcum"
           },
-          "setGlobal": "CCO_CategorySmelter_Orichalcum"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Orichalcum"
+            }
+          ]
         },
         {
           "match": {
             "edidContains": "BYOHMaterialGlass"
           },
-          "setGlobal": "CCO_CategorySmelter_Misc"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Misc"
+            }
+          ]
         },
         {
           "match": {
@@ -2291,31 +2866,56 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategorySmelter_Glass"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Glass"
+            }
+          ]
         },
         {
           "match": {
             "fullContains": "Ebony"
           },
-          "setGlobal": "CCO_CategorySmelter_Ebony"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Ebony"
+            }
+          ]
         },
         {
           "match": {
             "fullContains": "Stalhrim"
           },
-          "setGlobal": "CCO_CategorySmelter_Stalhrim"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Stalhrim"
+            }
+          ]
         },
         {
           "match": {
             "fullContains": "Calcinium"
           },
-          "setGlobal": "CCO_CategorySmelter_Calcinium"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Calcinium"
+            }
+          ]
         },
         {
           "match": {
             "fullContains": "Galatite"
           },
-          "setGlobal": "CCO_CategorySmelter_Galatite"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Galatite"
+            }
+          ]
         },
         {
           "match": {
@@ -2343,7 +2943,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategorySmelter_Organics"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Organics"
+            }
+          ]
         },
         {
           "comment": "default",
@@ -2352,7 +2957,12 @@
               "edidContains": "MenuOption"
             }
           },
-          "setGlobal": "CCO_CategorySmelter_Misc"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategorySmelter_Misc"
+            }
+          ]
         }
       ]
     },
@@ -2366,7 +2976,12 @@
           "match": {
             "recipeEdidContains": "Breakdown"
           },
-          "setGlobal": "CCO_OptionBreakdownEquipmentatTanningRack"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_OptionBreakdownEquipmentatTanningRack"
+            }
+          ]
         }
       ]
     },
@@ -2399,7 +3014,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryTanRack_Hide"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryTanRack_Hide"
+            }
+          ]
         },
         {
           "match": {
@@ -2412,7 +3032,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryTanRack_Leather"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryTanRack_Leather"
+            }
+          ]
         },
         {
           "match": {
@@ -2437,7 +3062,12 @@
               }
             ]
           },
-          "setGlobal": "CCO_CategoryTanRack_Cloth"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryTanRack_Cloth"
+            }
+          ]
         },
         {
           "comment": "default",
@@ -2446,7 +3076,12 @@
               "edidContains": "MenuOption"
             }
           },
-          "setGlobal": "CCO_CategoryTanRack_Misc"
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryTanRack_Misc"
+            }
+          ]
         }
       ]
     }

@@ -18,7 +18,34 @@
     { "material": "DLC2ChitinPlate", "perk": "ElvenSmithing", "comment": "Chitin Plate -> Elven Smithing (Dragonborn, Chitin armor)" },
     { "material": "DLC2NetchLeather", "perk": "ElvenSmithing", "comment": "Netch Leather -> Elven Smithing (Dragonborn)" },
     { "material": "DLC2OreStalhrim", "perk": "EbonySmithing", "comment": "Stalhrim Ore -> Ebony Smithing (Dragonborn)" },
-    { "material": "ccBGSSSE025_IngotAmber", "perk": "GlassSmithing", "comment": "'Saints & Seducers' Amber Ingot -> Glass Smithing (Creation Club)" },
-    { "material": "ccBGSSSE025_IngotMadness", "perk": "EbonySmithing", "comment": "'Saints & Seducers' Madness Ingot -> Ebony Smithing (Creation Club)" }
-  ]
+    { "material": "ccBGSSSE025_IngotAmber", "perk": "DaedricSmithing", "comment": "'Saints & Seducers' Amber Ingot -> Daedric Smithing (Creation Club)" },
+    { "material": "ccBGSSSE025_IngotMadness", "perk": "DaedricSmithing", "comment": "'Saints & Seducers' Madness Ingot -> Daedric Smithing (Creation Club)" }
+  ],
+
+  "classifiers": [
+    {
+      "comment": "Complement to the mappings above: those trigger on the RECIPE'S REQUIRED ingredient (e.g. needs an Ebony Ingot), so a recipe that produces an Ebony item without literally requiring IngotEbony (a different mod's Ebony armor, a container swap, a leveled-material recipe, etc.) falls through uncaught. This catches those by keying on the PRODUCED item's own material keyword instead: base game, Dragonborn, and the Creation Club 'Saints & Seducers' sets (see comment at the bottom for the one material deliberately left out and why).",
+      "rules": [
+        { "match": { "keyword": ["ArmorMaterialSteel", "WeapMaterialSteel"] }, "conditions": [{ "function": "HasPerk", "param1": "SteelSmithing" }], "comment": "Steel (base game)" },
+        { "match": { "keyword": ["WeapMaterialSilver"] }, "conditions": [{ "function": "HasPerk", "param1": "SteelSmithing" }], "comment": "Silver (base game, weapons only, no vanilla silver armor)" },
+        { "match": { "keyword": ["ArmorMaterialDwarven", "WeapMaterialDwarven"] }, "conditions": [{ "function": "HasPerk", "param1": "DwarvenSmithing" }], "comment": "Dwarven (base game)" },
+        { "match": { "keyword": ["ArmorMaterialElven", "WeapMaterialElven"] }, "conditions": [{ "function": "HasPerk", "param1": "ElvenSmithing" }], "comment": "Elven (base game)" },
+        { "match": { "keyword": ["ArmorMaterialOrcish", "WeapMaterialOrcish"] }, "conditions": [{ "function": "HasPerk", "param1": "OrcishSmithing" }], "comment": "Orcish (base game)" },
+        { "match": { "keyword": ["ArmorMaterialGlass", "WeapMaterialGlass"] }, "conditions": [{ "function": "HasPerk", "param1": "GlassSmithing" }], "comment": "Glass (base game)" },
+        { "match": { "keyword": ["ArmorMaterialEbony", "WeapMaterialEbony"] }, "conditions": [{ "function": "HasPerk", "param1": "EbonySmithing" }], "comment": "Ebony (base game)" },
+        { "match": { "keyword": ["ArmorMaterialDaedric", "WeapMaterialDaedric"] }, "conditions": [{ "function": "HasPerk", "param1": "DaedricSmithing" }], "comment": "Daedric (base game)" },
+        { "match": { "keyword": ["ArmorMaterialSteelPlate", "ArmorMaterialScaled", "DLC2WeaponMaterialNordic"] }, "conditions": [{ "function": "HasPerk", "param1": "AdvancedArmors" }], "comment": "Advanced Armors: Corundum-tier armor (base game) + Nordic weapons (Dragonborn)" },
+        { "match": { "keyword": ["ArmorMaterialDragonplate", "ArmorMaterialDragonscale", "DLC1WeapMaterialDragonbone"] }, "conditions": [{ "function": "HasPerk", "param1": "DragonArmor" }], "comment": "Dragon (base game armor + Dawnguard weapons)" },
+        { "match": { "keyword": ["DLC2ArmorMaterialBonemoldLight", "DLC2ArmorMaterialBonemoldHeavy", "WAF_MaterialBonemold"] }, "conditions": [{ "function": "HasPerk", "param1": "SteelSmithing" }], "comment": "Bonemold (Dragonborn); WAF_MaterialBonemold is a mod-added keyword (no vanilla Bonemold weapons exist), matches the Steel Smithing pairing used for BoneMeal above" },
+        { "match": { "keyword": ["DLC2ArmorMaterialChitinHeavy", "DLC2ArmorMaterialChitinLight", "WeapMaterialChitin"] }, "conditions": [{ "function": "HasPerk", "param1": "ElvenSmithing" }], "comment": "Chitin (Dragonborn)" },
+        { "match": { "keyword": ["DLC2ArmorMaterialStalhrimHeavy", "DLC2ArmorMaterialStalhrimLight", "DLC2WeaponMaterialStalhrim"] }, "conditions": [{ "function": "HasPerk", "param1": "EbonySmithing" }], "comment": "Stalhrim (Dragonborn)" },
+        { "match": { "keyword": ["ccBGSSSE025_ArmorMaterialGolden", "ccBGSSSE025_WeapMaterialGolden"] }, "conditions": [{ "function": "HasPerk", "param1": "EbonySmithing" }], "comment": "Golden Saint (Creation Club, Saints & Seducers)" },
+        { "match": { "keyword": ["ccBGSSSE025_ArmorMaterialDark", "ccBGSSSE025_WeapMaterialDark"] }, "conditions": [{ "function": "HasPerk", "param1": "EbonySmithing" }], "comment": "Dark Seducer (Creation Club, Saints & Seducers)" },
+        { "match": { "keyword": ["ccBGSSSE025_ArmorMaterialMadness", "ccBGSSSE025_WeapMaterialMadness"] }, "conditions": [{ "function": "HasPerk", "param1": "DaedricSmithing" }], "comment": "Madness (Creation Club, Saints & Seducers)" },
+        { "match": { "keyword": ["ccBGSSSE025_ArmorMaterialAmber", "ccBGSSSE025_WeapMaterialAmber"] }, "conditions": [{ "function": "HasPerk", "param1": "DaedricSmithing" }], "comment": "Amber (Creation Club, Saints & Seducers)" }
+      ]
+    }
+  ],
+
+  "//classifiers": "One material from the mappings list above has NO keyword-based analog here: Netch Leather (DLC2NetchLeather) is a plain ingredient used inside Bonemold recipes, it doesn't tag its own distinct produced-item material category, so there's nothing for a classifier to key on."
 }

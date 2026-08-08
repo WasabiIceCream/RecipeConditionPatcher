@@ -66,12 +66,19 @@ namespace RPP::ClassifierEditor
 					spec.value = c.value("value", std::string{ "1" });
 					spec.runOn = c.value("runOn", 0);
 					spec.logic = c.value("logic", std::string{ "AND" });
-					rule.advancedConditions.push_back(UI::FromSpec(spec));
+					rule.conditions.push_back(UI::FromSpec(spec));
 				}
 			}
 
 			if (a_ruleJson.contains("setGlobal")) {
-				rule.setGlobals = ToBufferList<128>(ToStringList(a_ruleJson["setGlobal"]));
+				for (const auto& name : ToStringList(a_ruleJson["setGlobal"])) {
+					ConditionSpec spec{};
+					spec.function = "GetGlobalValue";
+					spec.param1 = name;
+					spec.op = "==";
+					spec.value = "1";
+					rule.conditions.push_back(UI::FromSpec(spec));
+				}
 			}
 
 			return rule;
@@ -91,9 +98,9 @@ namespace RPP::ClassifierEditor
 				j["match"] = std::move(matchJson);
 			}
 
-			if (!a_rule.advancedConditions.empty()) {
+			if (!a_rule.conditions.empty()) {
 				nlohmann::ordered_json conditions = nlohmann::ordered_json::array();
-				for (const auto& c : a_rule.advancedConditions) {
+				for (const auto& c : a_rule.conditions) {
 					const ConditionSpec spec = UI::EditableCondition::ToSpec(c);
 					nlohmann::ordered_json cj;
 					cj["function"] = spec.function;
@@ -108,15 +115,6 @@ namespace RPP::ClassifierEditor
 					conditions.push_back(std::move(cj));
 				}
 				j["conditions"] = std::move(conditions);
-			}
-
-			const auto globals = FromBufferList(a_rule.setGlobals);
-			if (!globals.empty()) {
-				if (globals.size() == 1) {
-					j["setGlobal"] = globals.front();
-				} else {
-					j["setGlobal"] = globals;
-				}
 			}
 
 			return j;

@@ -123,7 +123,7 @@ namespace RPP::UI::ClassifiersEditor
 
 		// ------------------------------------------------------------------
 		// Add/remove list of autocompleted text fields, the same widget
-		// shape used for benchKeywords, setGlobal, and every row's value
+		// shape used for benchKeywords and every row's value
 		// list, just with a different buffer size/candidate list/hint.
 		// ------------------------------------------------------------------
 
@@ -141,6 +141,62 @@ namespace RPP::UI::ClassifiersEditor
 					deleteIndex = i;
 				}
 				ImGui::PopID();
+			}
+			if (deleteIndex >= 0) {
+				a_list.erase(a_list.begin() + deleteIndex);
+			}
+			if (ImGui::SmallButton("+")) {
+				a_list.emplace_back();
+			}
+		}
+
+		// Same widget as RenderValueList, but packs entries several to a
+		// line instead of one per line: bench keyword lists are usually
+		// short strings (CraftingSmithingForge, ...) where one-per-line
+		// wastes a lot of vertical space for very little content. Only
+		// used for benchKeywords, not the match-row value lists above
+		// (those can hold long free-text substrings/EditorIDs where the
+		// full row width actually helps).
+		//
+		// Deliberately falls back to one-per-line whenever the item just
+		// drawn owns the suggestion popup (Suggestions().owner == its
+		// buffer): AutocompleteInputText's own comment on that popup
+		// explains that SameLine() after the popup's child window rewinds
+		// the cursor to the popup's TOP edge, so packing the NEXT field in
+		// beside a field whose popup is currently open would sit it right
+		// next to that field's input box while the popup is still open
+		// below (fine visually, but untested in-game), so this only takes
+		// that layout while nothing is actively suggesting.
+		template <std::size_t N>
+		void RenderBenchKeywordList(std::vector<std::array<char, N>>& a_list, const std::vector<Candidate>& a_candidates, Indicator a_indicator, const char* a_hint)
+		{
+			constexpr float kItemWidth = 240.0f;
+			// Rough allowance for the NEXT item's own trailing OK/not-found
+			// indicator + "x" button, so the wrap check is sized against
+			// what that item will actually occupy, not just its input box.
+			constexpr float kTrailingControlsWidth = 90.0f;
+			const float windowRightEdge = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+
+			int deleteIndex = -1;
+			for (int i = 0; i < static_cast<int>(a_list.size()); ++i) {
+				ImGui::PushID(i);
+				ImGui::PushItemWidth(kItemWidth);
+				AutocompleteInputText("##v", a_hint, a_list[i], a_candidates, a_indicator);
+				ImGui::PopItemWidth();
+				ImGui::SameLine();
+				if (ImGui::SmallButton("x")) {
+					deleteIndex = i;
+				}
+				const bool popupOpen = Suggestions().owner == static_cast<const void*>(a_list[i].data());
+				ImGui::PopID();
+
+				const bool hasNext = (i + 1) < static_cast<int>(a_list.size());
+				if (hasNext && !popupOpen) {
+					const float nextRightEdge = ImGui::GetItemRectMax().x + ImGui::GetStyle()->ItemSpacing.x + kItemWidth + kTrailingControlsWidth;
+					if (nextRightEdge < windowRightEdge) {
+						ImGui::SameLine();
+					}
+				}
 			}
 			if (deleteIndex >= 0) {
 				a_list.erase(a_list.begin() + deleteIndex);
@@ -177,7 +233,6 @@ namespace RPP::UI::ClassifiersEditor
 
 			const RowCandidates rc = CandidatesForRowKind(a_row.kind);
 			ImGui::Indent();
-			UI::Style::Hint("Matches if this is true for ANY of the values below.");
 			RenderValueList(a_row.values, *rc.list, rc.indicator, rc.hint);
 			ImGui::Unindent();
 		}
@@ -233,6 +288,10 @@ namespace RPP::UI::ClassifiersEditor
 
 			if (a_match.blocks.empty()) {
 				ImGui::TextDisabled("(always matches, no restriction)");
+			} else {
+				UI::Style::Hint(
+					"Each condition matches if it's true for ANY of its listed values. Conditions "
+					"in one \"ALL of\" box are ANDed; separate OR-alternatives are ORed.");
 			}
 
 			int deleteBlock = -1;
@@ -261,65 +320,52 @@ namespace RPP::UI::ClassifiersEditor
 		}
 
 		// ------------------------------------------------------------------
-		// Rule conditions: the common-case "Set Global(s)" tag list, plus a
-		// collapsible advanced section reusing RenderConditionFields
-		// verbatim (same widget the Mappings tab uses) for the rare rule
-		// that needs more than a plain global tag.
+		// Rule conditions: one uniform list reusing RenderConditionFields
+		// verbatim (same widget the Mappings tab uses). A plain Global
+		// check is just a condition here too (Function = GetGlobalValue,
+		// Param 1 = the global's EditorID, Value = True); there's no
+		// separate "Set Global" shortcut in the UI, one condition list is
+		// simpler than two ways to say the same thing. (The JSON
+		// `setGlobal` shorthand still exists for hand-editing (see
+		// Classifiers.h); the editor just always saves the expanded form.)
 		// ------------------------------------------------------------------
 
 		void RenderRuleConditions(EditableClassifierRule& a_rule)
 		{
-			UI::Style::Heading("Set Global(s)");
-			UI::Style::Hint("Adds GetGlobalValue(name) == 1 for each global listed; covers what most rules need.");
-			RenderValueList(a_rule.setGlobals, CandidatesForFormType(RE::FormType::Global), Indicator::Form, "global EditorID");
+			UI::Style::Heading("Conditions");
+			UI::Style::Hint("What to add when this rule's Match fires. For a plain global check, use Function = GetGlobalValue, Param 1 = the global's EditorID.");
 
-			ImGui::Spacing();
-			if (ImGui::TreeNode("Advanced conditions (rarely needed)")) {
-				UI::Style::Hint(
-					"For anything \"Set Global\" can't express: OR-chained checks, non-Global "
-					"functions, comparing against something other than a literal 1. Most rules "
-					"don't need this.");
-
-				int deleteIndex = -1;
-				for (int i = 0; i < static_cast<int>(a_rule.advancedConditions.size()); ++i) {
-					ImGui::PushID(i);
-					ImGui::Separator();
-					RenderConditionFields(a_rule.advancedConditions[i]);
-					if (ImGui::SmallButton("Remove this condition")) {
-						deleteIndex = i;
-					}
-					ImGui::PopID();
+			int deleteIndex = -1;
+			for (int i = 0; i < static_cast<int>(a_rule.conditions.size()); ++i) {
+				ImGui::PushID(i);
+				ImGui::Separator();
+				RenderConditionFields(a_rule.conditions[i]);
+				if (ImGui::SmallButton("Remove this condition")) {
+					deleteIndex = i;
 				}
-				if (deleteIndex >= 0) {
-					a_rule.advancedConditions.erase(a_rule.advancedConditions.begin() + deleteIndex);
-				}
-				if (ImGui::SmallButton("+ Add advanced condition")) {
-					a_rule.advancedConditions.emplace_back();
-				}
-				ImGui::TreePop();
+				ImGui::PopID();
+			}
+			if (deleteIndex >= 0) {
+				a_rule.conditions.erase(a_rule.conditions.begin() + deleteIndex);
+			}
+			if (!a_rule.conditions.empty()) {
+				ImGui::Separator();
+			}
+			if (ImGui::SmallButton("+ Add condition")) {
+				a_rule.conditions.emplace_back();
 			}
 		}
 
 		// One-line summary for a rule's collapsed header.
 		std::string SummariseRule(const EditableClassifierRule& a_rule)
 		{
-			std::string globals;
-			for (const auto& g : a_rule.setGlobals) {
-				if (g[0] == '\0') {
-					continue;
-				}
-				if (!globals.empty()) {
-					globals += ", ";
-				}
-				globals += g.data();
+			if (a_rule.conditions.empty()) {
+				return "(empty, add a condition)";
 			}
-			if (!globals.empty()) {
-				return "sets " + globals;
+			if (a_rule.conditions.size() == 1) {
+				return SummariseCondition(a_rule.conditions.front());
 			}
-			if (!a_rule.advancedConditions.empty()) {
-				return fmt::format("{} advanced condition(s)", a_rule.advancedConditions.size());
-			}
-			return "(empty, add a Set Global or an advanced condition)";
+			return fmt::format("{}, +{} more", SummariseCondition(a_rule.conditions.front()), a_rule.conditions.size() - 1);
 		}
 
 		void RenderRule(EditableClassifierRule& a_rule, int a_index, bool& a_outDelete)
@@ -361,18 +407,12 @@ namespace RPP::UI::ClassifiersEditor
 			if (ImGui::CollapsingHeader(header.c_str())) {
 				ImGui::Indent();
 
-				ImGui::PushItemWidth(-1.0f);
-				ImGui::InputTextWithHint("##comment", "comment (optional, purely for humans)",
-					a_group.comment.data(), a_group.comment.size());
-				ImGui::PopItemWidth();
-
-				ImGui::Spacing();
 				UI::Style::Heading("Crafting bench(es)");
 				UI::Style::Hint(
 					"Restrict this group to recipes made at a specific bench (e.g. "
 					"CraftingSmithingForge, CraftingSmelter, CraftingTanningRack). Leave empty "
 					"for any bench.");
-				RenderValueList(a_group.benchKeywords, CandidatesForFormType(RE::FormType::Keyword), Indicator::Form, "bench keyword EditorID");
+				RenderBenchKeywordList(a_group.benchKeywords, CandidatesForFormType(RE::FormType::Keyword), Indicator::Form, "bench keyword EditorID");
 
 				ImGui::Spacing();
 				RenderMatchEditor("When (applies to every rule below)", a_group.when);
@@ -397,6 +437,12 @@ namespace RPP::UI::ClassifiersEditor
 				if (ImGui::SmallButton("+ Add Rule")) {
 					a_group.rules.emplace_back();
 				}
+
+				ImGui::Spacing();
+				ImGui::PushItemWidth(-120.0f);
+				ImGui::InputTextWithHint("Comment", "optional note, not used by the patcher",
+					a_group.comment.data(), a_group.comment.size());
+				ImGui::PopItemWidth();
 
 				ImGui::Spacing();
 				ImGui::Separator();
