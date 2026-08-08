@@ -35,9 +35,12 @@ namespace RPP
 						spec.value = c.value("value", std::string{ "1" });
 						spec.runOn = c.value("runOn", 0);
 						spec.logic = c.value("logic", std::string{ "AND" });
-						if (!spec.param1.empty()) {
-							o.conditions.push_back(std::move(spec));
-						}
+						// NOT gated on param1 being non-empty. A
+						// recipeOverrides condition can legitimately be a
+						// param-less function (GetCurrentTime, GetLevel,
+						// GetRandomPercent; see the Condition functions
+						// table in the README).
+						o.conditions.push_back(std::move(spec));
 					}
 				} else if (entry.contains("perks") && entry["perks"].is_array()) {
 					// Backward compat with the older perks-only schema: one
@@ -58,7 +61,7 @@ namespace RPP
 				}
 				if (!o.exclude && o.conditions.empty()) {
 					SKSE::log::warn(
-						"recipeOverrides entry for '{}' in {} has no \"conditions\" and \"exclude\" isn't true - it does nothing, skipping",
+						"recipeOverrides entry for '{}' in {} has no \"conditions\" and \"exclude\" isn't true; it does nothing, skipping",
 						o.recipeID, a_sourcePath);
 					continue;
 				}
@@ -99,7 +102,7 @@ namespace RPP
 
 	void SaveRecipeOverrides(const std::vector<RecipeOverride>& a_overrides, const std::string& a_path)
 	{
-		// Read-modify-write of the TARGET file - see the note in
+		// Read-modify-write of the TARGET file. See the note in
 		// TriggerConfig.cpp's SaveUserTriggerEntries.
 		auto j = ConfigFile::ReadFile(a_path);
 

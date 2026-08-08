@@ -7,11 +7,11 @@ namespace RPP::ActorValues
 	// (https://ck.uesp.net/wiki/ActorValueInfo_Script#Actor_Value_IDs) and
 	// confirmed against a live game install. Used so GetActorValue's
 	// param1 can be written/typed as a readable name (e.g. "Smithing")
-	// instead of a magic number - see Conditions.cpp's
+	// instead of a magic number. See Conditions.cpp's
 	// ResolveActorValueParam for where this table gets consulted.
 	//
 	// ID 162 has no confirmed name (the wiki itself lists it as unknown),
-	// so it's omitted here - it can still be reached by typing the raw
+	// so it's omitted here. It can still be reached by typing the raw
 	// number "162" directly, same as any function/value not in a curated
 	// table elsewhere in this project.
 	struct Entry
@@ -183,7 +183,7 @@ namespace RPP::ActorValues
 		{ "MagickaRateMod", 159 },
 		{ "GrabActorOffset", 160 },
 		{ "Grabbed", 161 },
-		// 162 intentionally omitted - unnamed on the source wiki page.
+		// 162 intentionally omitted, unnamed on the source wiki page.
 		{ "ReflectDamage", 163 },
 	};
 

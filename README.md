@@ -3,11 +3,11 @@
 [![License: MIT](https://img.shields.io/github/license/WasabiIceCream/RecipeConditionPatcher)](LICENSE)
 
 Automatically patches every crafting recipe (Constructible Object record)
-in your game with whatever conditions you want. The included default
-configuration adds matching perk requirements based on a recipe's
-materials. See [Advanced use](#advanced-use) for everything else it can
-do (quest progress, item counts, and hundreds of other things Skyrim can
-check).
+in your game with whatever conditions you want. The optional default
+mappings add matching perk requirements based on a recipe's materials.
+See [Installation](#installation). See [Advanced use](#advanced-use) for
+everything else it can do (quest progress, item counts, and hundreds of
+other things Skyrim can check).
 
 ## Requirements
 
@@ -20,7 +20,8 @@ check).
 
 ## Installation
 
-Drop these into your `Data` folder (or install using your favorite mod manager):
+The **main file** (required): drop into your `Data` folder, or install
+with your favorite mod manager:
 
 ```
 Data/
@@ -30,11 +31,28 @@ Data/
       RecipeConditionPatcher.json
 ```
 
+On its own, this does nothing: `RecipeConditionPatcher.json` only holds
+settings, not any mappings or classifiers. Grab at least one of these
+**optional files** too: each is just one more file dropped into the same
+`Data/SKSE/Plugins/` folder, nothing else to configure:
+
+- **`MatsNeedPerks_RCP.json`.** The default material->perk mappings (see
+  [What it does by default](#what-it-does-by-default) below). Most people
+  want this one.
+- **`CCOR_RCP.json`.** Only relevant if you also have [Complete Crafting
+  Overhaul Remastered](https://www.nexusmods.com/skyrimspecialedition/mods/28608)
+  installed. See [Classifiers](#classifiers).
+
+Or skip both and write your own from scratch. See
+[Configuring by hand](#configuring-by-hand).
+
 ## What it does by default
 
-The included configuration adds the matching perk requirement to every crafting recipe
-that uses one of the mapped materials (e.g. Ebony Ingot needs Ebony Smithing).
-See [the full default list](#default-mappings) for specifics.
+Nothing, on its own. See [Installation](#installation) above. With the
+optional `MatsNeedPerks_RCP.json` installed, it adds the matching perk
+requirement to every crafting recipe that uses one of the mapped materials
+(e.g. Ebony Ingot needs Ebony Smithing). See
+[the full default list](#default-mappings) for specifics.
 
 I basically got annoyed by many mod-added weapons and armors not having the appropriate crafting requirements.
 So, at the very least, if they require a material like Dwarven Ingots, this mod can add the Dwarven Smithing requirement to it as well.
@@ -48,8 +66,8 @@ We can still use this mod to edit specific recipes, and add the appropriate cond
 
 If you have SKSE Menu Framework installed, open it in-game with its
 hotkey (default `Page Up`) and look for the **Recipe Condition Patcher**
-section: a **Settings** tab and a **Mappings** tab. See
-[In-game menu, in detail](#in-game-menu-in-detail) for what each one does.
+section: a **Settings** tab, a **Mappings** tab, and a **Classifiers** tab.
+See [In-game menu, in detail](#in-game-menu-in-detail) for what each one does.
 
 Don't have SKSE Menu Framework? You can either edit the included config file, or create your own from scratch.
 See the [Configuring by hand](#configuring-by-hand) section below.
@@ -66,6 +84,14 @@ Two things you can do beyond the built-in, perk-based defaults:
   global variables, and hundreds of other things Skyrim can check are all
   supported, not just perks. A curated list of recommended functions covers
   the common cases. See the [Condition functions](#condition-functions) section.
+- **Classify recipes by what they make, in bulk.** Instead of triggering on a
+  required material, match on the produced item's record type, keywords, or
+  name. Useful for compatibility patches that need to categorize hundreds of
+  mod-added recipes at once (see the CCOR example in
+  [Classifiers](#classifiers)). Editable either as JSON or from the in-game
+  **Classifiers** tab; a predicate too complex for that tab's visual editor
+  (rare; see below) is shown read-only there instead of being risked on a
+  lossy round-trip.
 
 ---
 
@@ -106,7 +132,7 @@ config:
 }
 ```
 
-Only `mappings` and `recipeOverrides` are read from these files.
+Only `mappings`, `recipeOverrides`, and `classifiers` are read from these files.
 `enabled`/`existingPerkMode`/`logLevel` keys are ignored; only the main config's copies of these settings take effect.
 
 You don't have to write these by hand: the in-game **Mappings** tab has an
@@ -202,8 +228,14 @@ It produces a condition that silently evaluates to something other than what you
 
 ## Default mappings
 
-The `dist_data`/shipped `RecipeConditionPatcher.json` comes with a default
-set of mappings, all using `HasPerk` and identified by EditorID.
+`MatsNeedPerks_RCP.json` (the optional file from [Installation](#installation)
+above; see [Adding your own config as a separate mod](#adding-your-own-config-as-a-separate-mod-_rcpjson),
+it's just a normal external config, not special-cased in any way) has a
+default set of mappings, all using `HasPerk` and identified by EditorID.
+Don't want the defaults? Don't install it (or delete it). Want to tweak
+one entry? Copy it into your own `*_RCP.json` and edit away.
+`RecipeConditionPatcher.json` itself only holds settings and (optionally)
+your own `recipeOverrides`/`classifiers`.
 
 The full default set (all use the `HasPerk` function):
 
@@ -258,6 +290,113 @@ Each entry does one of two things:
   the processing order (see above) can still un-exclude the recipe. This
   isn't an unconditional veto; it's this entry's link in the chain.
 
+## Classifiers
+
+`mappings` triggers on what a recipe *requires* (an exact material identifier).
+`classifiers` triggers on what a recipe *produces*: its record type, its
+keywords, or substrings in its name. That means one config can classify
+hundreds of mod-added recipes into categories without listing every
+material or recipe by hand. This is what a keyword/name-based compatibility
+patch (e.g. for a crafting overhaul mod that gates recipes behind its own
+global variables) needs. Editable either by hand-writing the JSON below, or
+from the in-game **Classifiers** tab (see
+[In-game menu, in detail](#in-game-menu-in-detail)). The tab's visual editor
+covers the bounded "OR of AND-of-conditions" shape
+described below, which is what essentially every real-world predicate
+(including the full CCOR example) turns out to need; anything genuinely
+too complex for that (deep arbitrary `all`/`any`/`not` nesting) shows up
+read-only there instead of risking a lossy edit, with a note to change it
+by hand.
+
+```json
+{
+  "classifiers": [
+    {
+      "comment": "optional, purely for humans",
+      "benchKeyword": ["CraftingSmithingForge", "CraftingSmithingSkyforge"],
+      "when": { "signature": "ARMO" },
+      "rules": [
+        { "match": { "keyword": "ArmorMaterialEbony" }, "setGlobal": "MyMod_CategoryEbony" },
+        { "comment": "default: no \"match\" means always true", "setGlobal": "MyMod_CategoryOther" }
+      ]
+    }
+  ]
+}
+```
+
+Each **group** is an ordered, first-match-wins chain of **rules**, like an
+if/elseif/else: for a given recipe, the first rule in the group whose
+`match` is true has its `conditions` added (same
+function/param1/param2/operator/value/runOn/logic fields as `mappings`/
+`recipeOverrides` rows), and the rest of the group is skipped for that
+recipe. A rule with no `match` is always true. Put one last in a group to
+act as the default/fallback. If no rule in a group matches, that group
+simply adds nothing for that recipe; nothing else changes. A recipe can be
+matched by more than one **group** (each group is independent), just not by
+more than one rule *within* the same group.
+
+- **`benchKeyword`.** Restrict this group to recipes made at a specific
+  crafting bench (the `BNAM` field on the recipe, e.g.
+  `"CraftingSmithingForge"`, `"CraftingSmelter"`, `"CraftingTanningRack"`).
+  A string or an array of strings (OR). Omit for "any bench."
+- **`when`.** A predicate ANDed onto every rule's own `match`, factoring out
+  a guard shared by the whole group (e.g. "the produced item is ARMO and
+  not jewelry") instead of repeating it in every rule. Checked once before
+  any rule, so a recipe that fails it skips the whole group in a single
+  check. Purely a convenience: `"when": X` with a rule's `"match": Y` means
+  exactly the same thing as no `"when"` and that rule's `"match": {"all":[X,Y]}`.
+- A recipe with its own `recipeOverrides` entry (see above) is handled
+  exclusively by that override, same as material-based `mappings` scanning.
+  Classifiers are skipped for it too.
+
+**`setGlobal`.** Shorthand for a rule's `conditions`: `"setGlobal": "SomeGlobal"`
+(or an array of names) expands to one `GetGlobalValue(SomeGlobal) == 1`
+condition per name, appended after anything already in `conditions`. Since
+the overwhelming majority of a typical classifier's rules just tag a
+recipe with one global (see the CCOR example below), this is usually all a
+rule needs instead of spelling out the full condition object.
+
+### Match predicates
+
+Every list-valued kind below matches on ANY entry in the list (OR). For AND,
+wrap several single-entry predicates in `"all"`.
+
+| Predicate | True when... |
+|---|---|
+| `{ "signature": "ARMO" }` | the produced item's record type is one of the given 4-letter codes (`ARMO`, `WEAP`, `AMMO`, `MISC`, `KEYM`, `BOOK`, `INGR`, `ALCH`) |
+| `{ "keyword": "ArmorMaterialEbony" }` | the produced item has any of the given keyword EditorIDs |
+| `{ "armorType": "Clothing" }` | the produced ARMO's Armor Type is one of `"Light"`, `"Heavy"`, `"Clothing"` |
+| `{ "edidContains": "cloak" }` | the produced item's own EditorID contains any of the given substrings (case-insensitive) |
+| `{ "fullContains": "cloak" }` | the produced item's in-game display name (FULL) contains any of the given substrings (case-insensitive) |
+| `{ "recipeEdidContains": "Breakdown" }` | the *recipe's own* EditorID (not the produced item's) contains any of the given substrings |
+| `{ "recipeHasCondition": "SomeGlobal" }` | the recipe's *pre-existing* conditions (before this pass touched it) already reference any of the given identifiers (Global, Perk, or anything else a condition can point at) |
+| `{ "all": [ ... ] }` | every child predicate is true (AND) |
+| `{ "any": [ ... ] }` | at least one child predicate is true (OR) |
+| `{ "not": { ... } }` | the child predicate is false |
+
+`edidContains`/`fullContains`/`recipeEdidContains` all accept either a
+single string or an array of strings.
+
+### Example: Complete Crafting Overhaul Remastered compatibility
+
+`CCOR_RCP.json` (the optional file from [Installation](#installation)
+above; source at [`examples/CCOR_RCP.json`](examples/CCOR_RCP.json)) is a
+full, ready-to-use `*_RCP.json` translating the logic of [Complete
+Crafting Overhaul Remastered](https://www.nexusmods.com/skyrimspecialedition/mods/28608)'s
+own xEdit compatibility script (`CCOR Compatibility Script v2_4.pas`, by
+matortheeternal/kryptopyr/danielleonyett) into `classifiers`: forge weapon/
+armor/jewelry type, forge material, forge cultural/faction style, smelter
+category, and tanning rack category, all tagging recipes with the matching
+`CCO_*` global-variable conditions CCOR itself checks for. Install it
+alongside CCOR and it classifies every installed mod's recipes
+automatically at game load. No more running the xEdit script and building
+a patch plugin by hand every time your load order changes. Don't have CCOR?
+Don't install this file: it does nothing without it (the globals it
+references simply don't resolve, which is harmless; see the identifier
+format note above), so there's no reason to carry the extra file if you
+don't use CCOR. It's also just a large worked example of the `classifiers`
+schema if you're writing your own.
+
 ## In-game menu, in detail
 
 The mod has a live settings menu built with
@@ -272,7 +411,7 @@ Framework installed, `SKSEMenuFramework::IsInstalled()` returns false, menu
 registration is skipped, and the rest of the mod works exactly the same off
 of whatever configuration files exist for it.
 
-The section (registered as "Recipe Condition Patcher") has two tabs.
+The section (registered as "Recipe Condition Patcher") has three tabs.
 
 **Settings tab:**
 - **Enable Patcher.** Master on/off switch.
@@ -321,6 +460,30 @@ The section (registered as "Recipe Condition Patcher") has two tabs.
   **Reload From Disk.** Discards any unsaved edits and re-reads the file
   (if you hand-edited it while the game is running, or wanted to undo unsaved edits).
 
+**Classifiers tab.** An add/edit/delete editor for `classifiers` (see
+[Classifiers](#classifiers) above for the JSON this maps onto). Independent
+file selection from the Mappings tab: the two tabs can have different
+files open at once. Same **Save & Apply** / **Reload From Disk** / **Save
+As...** / **Create New** file-picker row as the Mappings tab, at the top.
+- Groups and rules are both collapsible, add/removable lists, same pattern
+  as Mappings/Overrides rows.
+- A group's **Crafting bench(es)** and **When** section apply to every rule
+  below them; a rule's own **Match** further narrows just that rule.
+- **Match** (both a group's `When` and a rule's own `Match`) is edited as
+  a list of **OR-alternatives**, each one a list of **AND**ed conditions.
+  Pick a **Field** (Signature / Keyword / Armor Type / EDID contains / FULL
+  contains / Recipe EDID contains / Recipe has condition), optionally check
+  **NOT**, and list one or more values (matches if the field is true for
+  *any* of them). **+ Add condition (AND)** adds another requirement to the
+  same alternative; **+ Add OR-alternative** adds a whole new alternative.
+  A predicate too deeply/oddly nested for this two-level shape (rare; see
+  [Classifiers](#classifiers)) is shown read-only instead, with a note to
+  edit the file by hand; the editor never touches it on save.
+- Each rule has a **Set Global(s)** list (the common case: adds
+  `GetGlobalValue(name) == 1` per name) and a collapsible **Advanced
+  conditions** section for anything that needs more (reuses the same
+  condition-fields widget as the Mappings tab).
+
 ### ⚠️ "Apply Now" and turning things off mid-session
 
 `BGSConstructibleObject` condition lists live in memory once the game's
@@ -355,6 +518,9 @@ clean result after changing the mapping file mid-session.
    left untouched and ANDed with the new one by default, so previous
    requirements still apply (see "Existing Conditions" mode for other
    options).
+5. `classifiers` (see above) run the same way, keyed off the recipe's
+   `CNAM` (produced item) and `BNAM` (crafting bench) instead of its
+   required materials.
 
 It's built directly against [`alandtse/CommonLibSSE-NG`](https://github.com/alandtse/CommonLibSSE-NG)
 (the `ng` branch), which compiles to a single DLL that works across SE, AE, and VR,
@@ -384,11 +550,11 @@ cd RecipeConditionPatcher
 
 :: configure + build
 :: (CommonLibSSE-NG is cloned automatically into extern/CommonLibSSE on first
-:: configure if it isn't already there - no manual submodule step needed.
+:: configure if it isn't already there. No manual submodule step needed.
 :: extern/SKSEMenuFramework.h is already vendored directly in this repo.
 :: vcpkg also pulls in DirectXTK here (a CommonLibSSE-NG dependency); on a
 :: real Windows build with the Windows SDK installed, its shader compiler
-:: build step just works with no extra setup - the workaround described in
+:: build step just works with no extra setup. The workaround described in
 :: the Linux section below is only needed when cross-compiling.)
 cmake --preset vs2022
 cmake --build --preset vs2022-release
@@ -436,17 +602,17 @@ sudo pacman -S clang lld llvm cmake ninja rust git
 # above), which already has a real fxc.exe via the Windows SDK.
 sudo pacman -S wine llvm-mingw
 
-# xwin - if the current release needs a newer Rust edition than your
+# xwin: if the current release needs a newer Rust edition than your
 # distro's rustc provides, pin an older version:
 cargo install xwin --version 0.6.5 --locked
 echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
 export PATH="$HOME/.cargo/bin:$PATH"
 
 # Download the Windows SDK + MSVC CRT. Both flags below are REQUIRED:
-#  - --use-winsysroot-style: without it, /winsysroot can't find anything
-#    (xwin's default output layout doesn't match what it expects)
-#  - --preserve-ms-arch-notation: without it, folders are named "x86_64"
-#    instead of "x64", which lld-link's auto-search won't find either
+#   --use-winsysroot-style: without it, /winsysroot can't find anything
+#     (xwin's default output layout doesn't match what it expects)
+#   --preserve-ms-arch-notation: without it, folders are named "x86_64"
+#     instead of "x64", which lld-link's auto-search won't find either
 mkdir -p ~/xwin-cache ~/xwin-out
 xwin --accept-license --cache-dir ~/xwin-cache splat \
   --output ~/xwin-out --include-debug-libs \
@@ -525,6 +691,12 @@ to something else if you need different ordering.
 - **Performance**: this only runs once, at game data load, and does a single
   pass over all recipes. There's no per-frame or per-craft cost.
   Testing on a load order with ~80,000 COBJ records took only 0.451 seconds (max).
+  `classifiers` groups check their `benchKeyword` restriction before
+  evaluating any rule, so a recipe from a bench no configured group cares
+  about (most COBJ records aren't smithing/smelting/tanning recipes at all)
+  skips straight past every group at the cost of one string comparison
+  each. The per-rule predicate tree only runs for the recipes it's
+  actually meant to classify.
 - **Compatibility**: in the default "Add to Existing" mode, this only
   *adds* conditions and never removes existing ones, so it should coexist
   fine with other recipe-editing mods. "Replace Existing" mode is a

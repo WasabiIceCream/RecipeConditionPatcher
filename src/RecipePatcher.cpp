@@ -1,5 +1,6 @@
 #include "RecipePatcher.h"
 
+#include "Classifiers.h"
 #include "ConfigFile.h"
 #include "Conditions.h"
 #include "EditorIDCache.h"
@@ -26,13 +27,13 @@ namespace RPP
 		// relative).
 		std::string DescribeRecipe(RE::BGSConstructibleObject* a_recipe)
 		{
-			// NOT a_recipe->GetFormEditorID() - that returns "" for
+			// NOT a_recipe->GetFormEditorID(): that returns "" for
 			// BGSConstructibleObject (see EditorIDCache.cpp for why), which
 			// is exactly why recipes used to log as a bare FormID.
 			const std::string_view editorID = LookupRecipeEditorID(a_recipe);
 
 			// GetFile() with its default index returns the LAST plugin to
-			// touch the record - i.e. whichever mod overrode it last, not
+			// touch the record, i.e. whichever mod overrode it last, not
 			// where it came from. GetFile(0) is the original source, which
 			// is what actually identifies the record.
 			auto* file = a_recipe->GetFile(0);
@@ -75,7 +76,7 @@ namespace RPP
 
 		// Is a_conditions' list non-empty at all? Used to decide how to
 		// apply Settings::existingPerkMode (or a per-recipe override's
-		// own mode) - Add (default), Replace, or Skip. Deliberately not
+		// own mode): Add (default), Replace, or Skip. Deliberately not
 		// restricted to any particular condition function anymore, now
 		// that this plugin can add conditions beyond HasPerk: the
 		// original intent of "does this recipe already have some gating
@@ -145,14 +146,14 @@ namespace RPP
 		// targeted by more than one source. a_overrides is already in the
 		// right processing order (main config's entries first, then each
 		// external *_RCP.json file's entries in alphabetical order by
-		// filename - see LoadRecipeOverrides), so a straightforward
+		// filename; see LoadRecipeOverrides), so a straightforward
 		// left-to-right scan is enough: for each recipe, track a running
 		// "chain state" that an Add-mode entry appends to and a
 		// Replace-mode entry (or exclude) resets, so whichever behavior
 		// the LAST entry in a recipe's chain establishes is what wins
-		// overall - see RecipeOverrides.h's RecipeOverride comment for
+		// overall; see RecipeOverrides.h's RecipeOverride comment for
 		// the full reasoning. Unresolvable recipes are logged and
-		// skipped - each surviving entry's own conditions are resolved
+		// skipped. Each surviving entry's own conditions are resolved
 		// later, individually, when actually applied
 		// (AddConditionIfMissing does that resolution internally).
 		ResolvedOverrides ResolveRecipeOverrides(const std::vector<RecipeOverride>& a_overrides)
@@ -178,7 +179,7 @@ namespace RPP
 
 				if (o.exclude) {
 					if (chain.excluded || !chain.conditions.empty()) {
-						SKSE::log::info("recipeOverrides: '{}' - entry from {} (exclude) discards what earlier entries for this recipe had established",
+						SKSE::log::info("recipeOverrides: '{}': entry from {} (exclude) discards what earlier entries for this recipe had established",
 							o.recipeID, o.sourceFile);
 					}
 					chain.excluded = true;
@@ -188,20 +189,20 @@ namespace RPP
 				}
 
 				if (chain.excluded) {
-					SKSE::log::info("recipeOverrides: '{}' - entry from {} un-excludes the recipe (a later entry always wins)",
+					SKSE::log::info("recipeOverrides: '{}': entry from {} un-excludes the recipe (a later entry always wins)",
 						o.recipeID, o.sourceFile);
 				}
 				chain.excluded = false;
 
 				if (o.mode == ExistingPerkMode::kReplace) {
 					if (!chain.conditions.empty()) {
-						SKSE::log::info("recipeOverrides: '{}' - entry from {} (Replace Existing) discards what earlier entries for this recipe had established",
+						SKSE::log::info("recipeOverrides: '{}': entry from {} (Replace Existing) discards what earlier entries for this recipe had established",
 							o.recipeID, o.sourceFile);
 					}
 					chain.wipeVanilla = true;
 					chain.conditions = o.conditions;
 				} else {
-					// Add to Existing (or Skip, hand-edited only - treated
+					// Add to Existing (or Skip, hand-edited only, treated
 					// the same way here since it has no coherent meaning
 					// as one link in a multi-source chain): append onto
 					// whatever the chain has accumulated so far, leaving
@@ -229,7 +230,7 @@ namespace RPP
 		}
 
 		// Logs how long the enclosing scope took, in seconds, when it goes
-		// out of scope - including every early-return path (disabled via
+		// out of scope, including every early-return path (disabled via
 		// settings, no triggers resolved, etc.), not just the "happy path"
 		// at the bottom of the function, since this fires from the
 		// destructor rather than needing a log call at each return site.
@@ -269,7 +270,7 @@ namespace RPP
 		// message for being below the active level. The per-recipe log
 		// lines below build strings (DescribeRecipe/DescribeSpec, several
 		// heap allocations each) and fire once per condition added across
-		// thousands of recipes - so without this guard, someone setting
+		// thousands of recipes, so without this guard, someone setting
 		// Log Verbosity to "Warnings Only"/"Errors Only" specifically to
 		// cut logging overhead would still pay all of that cost and then
 		// throw the result away. Mirrors the level mapping directly above.
@@ -294,6 +295,13 @@ namespace RPP
 		const auto rawOverrides = LoadRecipeOverrides(config, externalConfigs);
 		const auto overrides = ResolveRecipeOverrides(rawOverrides);
 
+		const auto classifierGroups = LoadClassifierGroups(config, externalConfigs);
+		// Memoizes identifier -> TESForm* lookups for classifiers' kRecipeHasCondition
+		// predicate across this entire pass (see Classifiers.h). The same
+		// handful of identifiers get checked against every recipe a
+		// matching classifier group applies to.
+		std::unordered_map<std::string, RE::TESForm*> classifierResolveCache;
+
 		auto* dataHandler = RE::TESDataHandler::GetSingleton();
 		if (!dataHandler) {
 			SKSE::log::error("TESDataHandler unavailable; cannot patch recipes");
@@ -310,6 +318,7 @@ namespace RPP
 		std::size_t conditionsAdded = 0;
 		std::size_t conditionsRemoved = 0;
 		std::size_t conditionsAddedFromOverrides = 0;
+		std::size_t conditionsAddedFromClassifiers = 0;
 		std::size_t conditionResolutionFailures = 0;
 
 		for (auto* cobj : recipes) {
@@ -320,7 +329,7 @@ namespace RPP
 
 			// DescribeRecipe() does several allocations (EditorID lookup,
 			// owning-plugin lookup, format) and a recipe can be logged
-			// about once per condition added to it - so build it at most
+			// about once per condition added to it, so build it at most
 			// once per recipe, and only if something actually logs.
 			std::string recipeDesc;
 			const auto RecipeDesc = [&]() -> const std::string& {
@@ -331,7 +340,7 @@ namespace RPP
 			};
 
 			// A recipeOverrides "exclude" entry takes priority over
-			// everything else, including the global existingPerkMode -
+			// everything else, including the global existingPerkMode;
 			// it's a deliberate, targeted "don't touch this one" opt-out.
 			if (overrides.excludedRecipes.contains(cobj)) {
 				++recipesExcludedByOverride;
@@ -370,7 +379,7 @@ namespace RPP
 			bool patchedThisRecipe = false;
 
 			// A recipe with its own (non-exclude) recipeOverrides entry is
-			// handled EXCLUSIVELY by that override - material-based
+			// handled EXCLUSIVELY by that override. Material-based
 			// scanning is skipped entirely for it. Without this check, a
 			// recipe's override conditions would just be layered
 			// alongside whatever the mappings table also adds for that
@@ -383,7 +392,7 @@ namespace RPP
 			if (!hasOverride) {
 				// Collect the distinct conditions this recipe's required
 				// materials call for, then add any that aren't already
-				// required. (After a Replace above, none are - everything
+				// required. (After a Replace above, none are; everything
 				// gets freshly added.)
 				cobj->requiredItems.ForEachContainerObject([&](RE::ContainerObject& a_entry) {
 					if (!a_entry.obj) {
@@ -398,7 +407,7 @@ namespace RPP
 					// Iterated in reverse: AddConditionIfMissing prepends onto
 					// the recipe's condition list, so adding this material's
 					// specs back-to-front leaves them in the same order they
-					// were authored in the mappings array - which is what
+					// were authored in the mappings array, which is what
 					// each spec's "logic" (AND/OR against whichever
 					// condition follows it) needs to actually mean what was
 					// configured, rather than ending up reversed.
@@ -420,10 +429,49 @@ namespace RPP
 
 					return RE::BSContainer::ForEachResult::kContinue;
 				});
+
+				// Classifier groups: bulk rules that key off what this
+				// recipe PRODUCES (record type/keywords/name substrings)
+				// rather than what it requires. See Classifiers.h. Each
+				// group is independent (a recipe can pick up conditions
+				// from more than one group), but within one group only
+				// the first matching rule fires.
+				if (!classifierGroups.empty()) {
+					const std::string_view benchEdid = cobj->benchKeyword ? cobj->benchKeyword->GetFormEditorID() : std::string_view{};
+					RE::TESForm* producedItem = cobj->createdItem;
+
+					for (const auto& group : classifierGroups) {
+						const auto* conditions = SelectClassifierConditions(
+							group, benchEdid, producedItem, cobj, classifierResolveCache);
+						if (!conditions) {
+							continue;
+						}
+
+						// Same reverse-iteration reasoning as the material
+						// loop above: AddConditionIfMissing prepends, so
+						// this preserves the order the rule's own
+						// "conditions" array was authored in.
+						for (auto rit = conditions->rbegin(); rit != conditions->rend(); ++rit) {
+							const auto& spec = *rit;
+							bool alreadyPresent = false;
+							std::string failReason;
+							if (!AddConditionIfMissing(cobj->conditions, spec, alreadyPresent, failReason)) {
+								++conditionResolutionFailures;
+								SKSE::log::warn("[{}] skipping classifier condition: {}", RecipeDesc(), failReason);
+							} else if (!alreadyPresent) {
+								patchedThisRecipe = true;
+								++conditionsAddedFromClassifiers;
+								if (logInfo) {
+									SKSE::log::info("[{}] added condition (via classifiers): {}", RecipeDesc(), DescribeSpec(spec));
+								}
+							}
+						}
+					}
+				}
 			}
 
 			// A recipeOverrides "conditions" entry for this specific
-			// recipe: force these on, exclusively (see above) - regardless
+			// recipe: force these on, exclusively (see above), regardless
 			// of what materials say. Runs even if this recipe had no
 			// mapped materials at all.
 			if (hasOverride) {
@@ -453,15 +501,24 @@ namespace RPP
 			}
 		}
 
+		// "conditions total" is a real grand total across all three
+		// sources. It used to just be conditionsAdded (material
+		// mappings), a leftover from before recipeOverrides/classifiers
+		// existed, which made the line read as if overrides/classifiers
+		// weren't counted at all.
+		const std::size_t totalConditionsAdded = conditionsAdded + conditionsAddedFromClassifiers + conditionsAddedFromOverrides;
+
 		SKSE::log::info(
 			"inspected {} recipes, patched {} of them, added {} conditions total "
-			"({} recipes had all existing conditions replaced, removing {} conditions; "
+			"({} from material mappings, {} from classifiers, {} from recipeOverrides); "
+			"{} recipes had all existing conditions replaced, removing {} conditions; "
 			"{} recipes skipped for already having a condition; "
-			"{} extra conditions added and {} recipes fully excluded via recipeOverrides; "
-			"{} condition(s) failed to resolve and were skipped)",
-			recipesInspected, recipesPatched, conditionsAdded,
+			"{} recipes fully excluded via recipeOverrides; "
+			"{} condition(s) failed to resolve and were skipped",
+			recipesInspected, recipesPatched, totalConditionsAdded,
+			conditionsAdded, conditionsAddedFromClassifiers, conditionsAddedFromOverrides,
 			recipesReplaced, conditionsRemoved, recipesSkippedExistingCondition,
-			conditionsAddedFromOverrides, recipesExcludedByOverride,
+			recipesExcludedByOverride,
 			conditionResolutionFailures);
 	}
 }

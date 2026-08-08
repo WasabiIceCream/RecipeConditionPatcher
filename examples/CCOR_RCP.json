@@ -1,0 +1,2454 @@
+{
+  "//": "Community compatibility patch for Complete Crafting Overhaul Remastered (CCOR): https://www.nexusmods.com/skyrimspecialedition/mods/28608 . Translates the logic of that mod's own 'CCOR Compatibility Script v2_4.pas' xEdit script (by matortheeternal, kryptopyr, danielleonyett) into RecipeConditionPatcher's classifiers feature, so any installed mod's recipes get tagged with the matching CCO_* global-variable conditions automatically at game load, without needing to run the xEdit script and build a patch plugin. Drop this file into Data/SKSE/Plugins/ alongside RecipeConditionPatcher.json (it only takes effect if both this mod and CCOR are installed; the CCO_* globals it references simply won't resolve otherwise, which is harmless, see the README). Only mappings/recipeOverrides/classifiers are read from this file; RecipeConditionPatcher's own settings are unaffected.",
+  "classifiers": [
+    {
+      "comment": "CCOR: ammo type (arrow/bolt/other)",
+      "benchKeyword": [
+        "CraftingSmithingForge",
+        "CraftingSmithingSkyforge",
+        "DLC1LD_CraftingForgeAetherium",
+        "DLC1CraftingDawnguard"
+      ],
+      "when": {
+        "signature": "AMMO"
+      },
+      "rules": [
+        {
+          "match": {
+            "edidContains": "arrow"
+          },
+          "setGlobal": "CCO_WeapAmmoArrowRecipes"
+        },
+        {
+          "match": {
+            "edidContains": "bolt"
+          },
+          "setGlobal": "CCO_WeapAmmoBoltRecipes"
+        },
+        {
+          "comment": "default for any other ammo",
+          "setGlobal": "CCO_WeapAmmoOtherRecipes"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: armor menu-type (clothing/heavy/light): forge + tanning rack",
+      "benchKeyword": [
+        "CraftingSmithingForge",
+        "CraftingSmithingSkyforge",
+        "DLC1LD_CraftingForgeAetherium",
+        "DLC1CraftingDawnguard",
+        "CraftingTanningRack"
+      ],
+      "when": {
+        "all": [
+          {
+            "signature": "ARMO"
+          },
+          {
+            "not": {
+              "any": [
+                {
+                  "keyword": "ArmorJewelry"
+                },
+                {
+                  "keyword": "ClothingCirclet"
+                },
+                {
+                  "keyword": "ClothingNecklace"
+                },
+                {
+                  "keyword": "ClothingRing"
+                },
+                {
+                  "keyword": "JewelryExpensive"
+                }
+              ]
+            }
+          },
+          {
+            "not": {
+              "recipeHasCondition": "CCO_OptionCraftingMenuOptions"
+            }
+          }
+        ]
+      },
+      "rules": [
+        {
+          "match": {
+            "any": [
+              {
+                "armorType": "Clothing"
+              },
+              {
+                "keyword": "ArmorClothing"
+              }
+            ]
+          },
+          "setGlobal": "CCO_ArmorClothingRecipes"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "armorType": "Heavy"
+              },
+              {
+                "keyword": "ArmorHeavy"
+              }
+            ]
+          },
+          "setGlobal": "CCO_ArmorHeavyRecipes"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "armorType": "Light"
+              },
+              {
+                "keyword": "ArmorLight"
+              }
+            ]
+          },
+          "setGlobal": "CCO_ArmorLightRecipes"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: clothing subtype: forge + tanning rack",
+      "benchKeyword": [
+        "CraftingSmithingForge",
+        "CraftingSmithingSkyforge",
+        "DLC1LD_CraftingForgeAetherium",
+        "DLC1CraftingDawnguard",
+        "CraftingTanningRack"
+      ],
+      "when": {
+        "all": [
+          {
+            "signature": "ARMO"
+          },
+          {
+            "not": {
+              "any": [
+                {
+                  "keyword": "ArmorJewelry"
+                },
+                {
+                  "keyword": "ClothingCirclet"
+                },
+                {
+                  "keyword": "ClothingNecklace"
+                },
+                {
+                  "keyword": "ClothingRing"
+                },
+                {
+                  "keyword": "JewelryExpensive"
+                }
+              ]
+            }
+          },
+          {
+            "not": {
+              "edidContains": "MenuOption"
+            }
+          },
+          {
+            "any": [
+              {
+                "armorType": "Clothing"
+              },
+              {
+                "keyword": "ArmorClothing"
+              }
+            ]
+          }
+        ]
+      },
+      "rules": [
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "WAF_ClothingCloak"
+              },
+              {
+                "edidContains": "cloak"
+              },
+              {
+                "fullContains": "cloak"
+              },
+              {
+                "fullContains": "cape"
+              }
+            ]
+          },
+          "setGlobal": "CCO_ClothingCloakRecipes"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "WAF_ClothingPouch"
+              },
+              {
+                "fullContains": "Backpack"
+              },
+              {
+                "fullContains": "Bandolier"
+              },
+              {
+                "fullContains": "Bag"
+              },
+              {
+                "fullContains": "Pouch"
+              },
+              {
+                "fullContains": "Satchel"
+              }
+            ]
+          },
+          "setGlobal": "CCO_ClothingPouchRecipes"
+        },
+        {
+          "match": {
+            "keyword": "WAF_ClothingAccessories"
+          },
+          "setGlobal": "CCO_ClothingMiscAccessories"
+        },
+        {
+          "match": {
+            "keyword": "ClothingBody"
+          },
+          "setGlobal": "CCO_ClothingRobeRecipes"
+        },
+        {
+          "match": {
+            "keyword": "ClothingFeet"
+          },
+          "setGlobal": "CCO_ClothingBootRecipes"
+        },
+        {
+          "match": {
+            "keyword": "ClothingHands"
+          },
+          "setGlobal": "CCO_ClothingGlovesRecipes"
+        },
+        {
+          "match": {
+            "keyword": "ClothingHead"
+          },
+          "setGlobal": "CCO_ClothingHoodRecipes"
+        },
+        {
+          "comment": "default for any other clothing",
+          "setGlobal": "CCO_ClothingMiscAccessories"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: non-clothing armor slot: forge + tanning rack",
+      "benchKeyword": [
+        "CraftingSmithingForge",
+        "CraftingSmithingSkyforge",
+        "DLC1LD_CraftingForgeAetherium",
+        "DLC1CraftingDawnguard",
+        "CraftingTanningRack"
+      ],
+      "when": {
+        "all": [
+          {
+            "signature": "ARMO"
+          },
+          {
+            "not": {
+              "any": [
+                {
+                  "keyword": "ArmorJewelry"
+                },
+                {
+                  "keyword": "ClothingCirclet"
+                },
+                {
+                  "keyword": "ClothingNecklace"
+                },
+                {
+                  "keyword": "ClothingRing"
+                },
+                {
+                  "keyword": "JewelryExpensive"
+                }
+              ]
+            }
+          },
+          {
+            "not": {
+              "armorType": "Clothing"
+            }
+          }
+        ]
+      },
+      "rules": [
+        {
+          "match": {
+            "keyword": "ArmorBoots"
+          },
+          "setGlobal": "CCO_ArmorBootRecipes"
+        },
+        {
+          "match": {
+            "all": [
+              {
+                "keyword": "ArmorCuirass"
+              },
+              {
+                "not": {
+                  "edidContains": "MenuOption"
+                }
+              }
+            ]
+          },
+          "setGlobal": "CCO_ArmorCuirassRecipes"
+        },
+        {
+          "match": {
+            "keyword": "ArmorGauntlets"
+          },
+          "setGlobal": "CCO_ArmorGauntletRecipes"
+        },
+        {
+          "match": {
+            "keyword": "ArmorHelmet"
+          },
+          "setGlobal": "CCO_ArmorHelmetRecipes"
+        },
+        {
+          "match": {
+            "keyword": "ArmorShield"
+          },
+          "setGlobal": "CCO_ArmorShieldRecipes"
+        },
+        {
+          "comment": "default for any other non-clothing armor slot",
+          "setGlobal": "CCO_ClothingMiscAccessories"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: jewelry type: forge only",
+      "benchKeyword": [
+        "CraftingSmithingForge",
+        "CraftingSmithingSkyforge",
+        "DLC1LD_CraftingForgeAetherium",
+        "DLC1CraftingDawnguard"
+      ],
+      "when": {
+        "all": [
+          {
+            "signature": "ARMO"
+          },
+          {
+            "any": [
+              {
+                "keyword": "ArmorJewelry"
+              },
+              {
+                "keyword": "ClothingCirclet"
+              },
+              {
+                "keyword": "ClothingNecklace"
+              },
+              {
+                "keyword": "ClothingRing"
+              },
+              {
+                "keyword": "JewelryExpensive"
+              }
+            ]
+          }
+        ]
+      },
+      "rules": [
+        {
+          "match": {
+            "all": [
+              {
+                "any": [
+                  {
+                    "keyword": "WAF_ClothingCloak"
+                  },
+                  {
+                    "edidContains": "cloak"
+                  },
+                  {
+                    "fullContains": "cloak"
+                  },
+                  {
+                    "fullContains": "cape"
+                  }
+                ]
+              },
+              {
+                "not": {
+                  "fullContains": "Stormcloak"
+                }
+              }
+            ]
+          },
+          "setGlobal": "CCO_ClothingCloakRecipes"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Bracelet"
+              },
+              {
+                "fullContains": "Bangle"
+              }
+            ]
+          },
+          "setGlobal": "CCO_JewelryBraceletRecipes"
+        },
+        {
+          "match": {
+            "fullContains": "Earring"
+          },
+          "setGlobal": "CCO_JewelryEarringRecipes"
+        },
+        {
+          "match": {
+            "keyword": "ClothingCirclet"
+          },
+          "setGlobal": "CCO_JewelryCircletRecipes"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ClothingNecklace"
+              },
+              {
+                "fullContains": "Necklace"
+              },
+              {
+                "fullContains": "Amulet"
+              },
+              {
+                "fullContains": "Choker"
+              },
+              {
+                "fullContains": "Torc"
+              }
+            ]
+          },
+          "setGlobal": "CCO_JewelryNecklaceRecipes"
+        },
+        {
+          "match": {
+            "keyword": "ClothingRing"
+          },
+          "setGlobal": "CCO_JewelryRingRecipes"
+        },
+        {
+          "comment": "default for any other jewelry",
+          "setGlobal": "CCO_JewelryOtherRecipes"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: weapon type: forge only (no default; a weapon matching none of these keeps whatever it already had)",
+      "benchKeyword": [
+        "CraftingSmithingForge",
+        "CraftingSmithingSkyforge",
+        "DLC1LD_CraftingForgeAetherium",
+        "DLC1CraftingDawnguard"
+      ],
+      "when": {
+        "signature": "WEAP"
+      },
+      "rules": [
+        {
+          "match": {
+            "all": [
+              {
+                "keyword": "WeapTypeStaff"
+              },
+              {
+                "not": {
+                  "edidContains": "MenuOption"
+                }
+              }
+            ]
+          },
+          "setGlobal": "CCO_WeapStaffRecipes"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Throw"
+              },
+              {
+                "edidContains": "Throw"
+              },
+              {
+                "fullContains": "Grenade"
+              },
+              {
+                "fullContains": "Bomb"
+              },
+              {
+                "edidContains": "Grenade"
+              },
+              {
+                "edidContains": "Bomb"
+              }
+            ]
+          },
+          "setGlobal": "CCO_WeapOtherRangedRecipes"
+        },
+        {
+          "match": {
+            "all": [
+              {
+                "any": [
+                  {
+                    "fullContains": "Staff"
+                  },
+                  {
+                    "fullContains": "Stave"
+                  },
+                  {
+                    "fullContains": "Spear"
+                  },
+                  {
+                    "fullContains": "Halberd"
+                  },
+                  {
+                    "fullContains": "Glaive"
+                  },
+                  {
+                    "fullContains": "Trident"
+                  }
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "keyword": "WeapTypeGreatsword"
+                  },
+                  {
+                    "keyword": "WeapTypeBattleaxe"
+                  },
+                  {
+                    "keyword": "WeapTypeWarhammer"
+                  }
+                ]
+              }
+            ]
+          },
+          "setGlobal": "CCO_WeapOther2HandRecipes"
+        },
+        {
+          "comment": "upstream CCOR v2.4 checks HasKeyword against its own global names here (CCO_WeapDaggerRecipes etc.), which can never match any real keyword. Fixed here to check the actual WeapType* keywords those globals are meant to gate on",
+          "match": {
+            "all": [
+              {
+                "any": [
+                  {
+                    "fullContains": "Staff"
+                  },
+                  {
+                    "fullContains": "Stave"
+                  },
+                  {
+                    "fullContains": "Spear"
+                  },
+                  {
+                    "fullContains": "Halberd"
+                  },
+                  {
+                    "fullContains": "Glaive"
+                  },
+                  {
+                    "fullContains": "Trident"
+                  }
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "keyword": "WeapTypeDagger"
+                  },
+                  {
+                    "keyword": "WeapTypeMace"
+                  },
+                  {
+                    "keyword": "WeapTypeSword"
+                  },
+                  {
+                    "keyword": "WeapTypeWarAxe"
+                  }
+                ]
+              }
+            ]
+          },
+          "setGlobal": "CCO_WeapOther1HandRecipes"
+        },
+        {
+          "match": {
+            "all": [
+              {
+                "keyword": "WeapTypeBattleaxe"
+              },
+              {
+                "not": {
+                  "edidContains": "MenuOption"
+                }
+              }
+            ]
+          },
+          "setGlobal": "CCO_WeapBattleaxeRecipes"
+        },
+        {
+          "match": {
+            "fullContains": "Crossbow"
+          },
+          "setGlobal": "CCO_WeapCrossbowRecipes"
+        },
+        {
+          "match": {
+            "keyword": "WeapTypeBow"
+          },
+          "setGlobal": "CCO_WeapBowRecipes"
+        },
+        {
+          "match": {
+            "keyword": "WeapTypeDagger"
+          },
+          "setGlobal": "CCO_WeapDaggerRecipes"
+        },
+        {
+          "match": {
+            "keyword": "WeapTypeGreatsword"
+          },
+          "setGlobal": "CCO_WeapGreatswordRecipes"
+        },
+        {
+          "match": {
+            "keyword": "WeapTypeMace"
+          },
+          "setGlobal": "CCO_WeapMaceRecipes"
+        },
+        {
+          "match": {
+            "keyword": "WeapTypeSword"
+          },
+          "setGlobal": "CCO_WeapSwordRecipes"
+        },
+        {
+          "match": {
+            "keyword": "WeapTypeWarAxe"
+          },
+          "setGlobal": "CCO_WeapWarAxeRecipes"
+        },
+        {
+          "match": {
+            "keyword": "WeapTypeWarhammer"
+          },
+          "setGlobal": "CCO_WeapWarhammerRecipes"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: misc item type: forge + tanning rack",
+      "benchKeyword": [
+        "CraftingSmithingForge",
+        "CraftingSmithingSkyforge",
+        "DLC1LD_CraftingForgeAetherium",
+        "DLC1CraftingDawnguard",
+        "CraftingTanningRack"
+      ],
+      "when": {
+        "signature": "MISC"
+      },
+      "rules": [
+        {
+          "match": {
+            "any": [
+              {
+                "edidContains": "Gem"
+              },
+              {
+                "edidContains": "Ingot"
+              },
+              {
+                "edidContains": "Ore"
+              },
+              {
+                "edidContains": "FurPlate"
+              },
+              {
+                "edidContains": "Hide"
+              },
+              {
+                "edidContains": "Leather"
+              },
+              {
+                "keyword": "BYOHHouseCraftingCategorySmithing"
+              }
+            ]
+          },
+          "setGlobal": "CCO_MiscSuppliesRecipes"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "BYOHHouseCraftingCategoryContainers"
+              },
+              {
+                "keyword": "BYOHHouseCraftingCategoryFurniture"
+              },
+              {
+                "keyword": "BYOHHouseCraftingCategoryShelf"
+              },
+              {
+                "keyword": "BYOHHouseCraftingCategoryWeaponRacks"
+              }
+            ]
+          },
+          "setGlobal": "CCO_MiscDecorRecipes"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "BYOHAdoptionToyKeyword"
+              },
+              {
+                "keyword": "BYOHAdoptionClothesKeyword"
+              },
+              {
+                "keyword": "GiftChildSpecial"
+              },
+              {
+                "keyword": "GiftUniversallyValuable"
+              }
+            ]
+          },
+          "setGlobal": "CCO_MiscGiftRecipes"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "WAF_ToolsMaterials"
+              },
+              {
+                "fullContains": "Pickaxe"
+              },
+              {
+                "fullContains": "Woodaxe"
+              },
+              {
+                "fullContains": "Torch"
+              },
+              {
+                "fullContains": "Tool"
+              }
+            ]
+          },
+          "setGlobal": "CCO_MiscToolRecipes"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Tent"
+              },
+              {
+                "fullContains": "Bed"
+              },
+              {
+                "fullContains": "Camp"
+              },
+              {
+                "keyword": "WAF_MaterialSurvival"
+              }
+            ]
+          },
+          "setGlobal": "CCO_MiscSurvivalRecipes"
+        },
+        {
+          "comment": "default for any other misc item",
+          "setGlobal": "CCO_MiscOtherRecipes"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: cultural/faction style: forge only, applies to any produced item regardless of record type",
+      "benchKeyword": [
+        "CraftingSmithingForge",
+        "CraftingSmithingSkyforge",
+        "DLC1LD_CraftingForgeAetherium",
+        "DLC1CraftingDawnguard"
+      ],
+      "rules": [
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Argonian"
+              },
+              {
+                "fullContains": "Marsh"
+              },
+              {
+                "fullContains": "Saxhleel"
+              },
+              {
+                "fullContains": "An-Xileel"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Argonian"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Khajiit"
+              },
+              {
+                "fullContains": "Elsweyr"
+              },
+              {
+                "fullContains": "Senche"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Khajiit"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Akavir"
+              },
+              {
+                "fullContains": "Tsaesci"
+              },
+              {
+                "fullContains": "Dragonguard"
+              },
+              {
+                "fullContains": "Katana"
+              },
+              {
+                "fullContains": "Tanto"
+              },
+              {
+                "fullContains": "Ninjato"
+              },
+              {
+                "fullContains": "Dadao"
+              },
+              {
+                "fullContains": "Nodachi"
+              },
+              {
+                "fullContains": "Wakizashi"
+              },
+              {
+                "fullContains": "Changdao"
+              },
+              {
+                "fullContains": "Daito"
+              },
+              {
+                "fullContains": "Samurai"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Akaviri"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "WAF_WeapMaterialRedguard"
+              },
+              {
+                "fullContains": "Scimitar"
+              },
+              {
+                "fullContains": "Hammerfell"
+              },
+              {
+                "fullContains": "Redguard"
+              },
+              {
+                "fullContains": "Yokuda"
+              },
+              {
+                "fullContains": "Ra Gada"
+              },
+              {
+                "fullContains": "Alik'r"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Redguard"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Breton"
+              },
+              {
+                "edidContains": "Breton"
+              },
+              {
+                "fullContains": "High Rock"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Breton"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Snow Elf"
+              },
+              {
+                "fullContains": "Snow Elv"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_SnowElf"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialFalmer"
+              },
+              {
+                "keyword": "DLC1ArmorMaterialFalmerHardened"
+              },
+              {
+                "keyword": "DLC1ArmorMaterialFalmerHeavy"
+              },
+              {
+                "keyword": "DLC1ArmorMaterialFalmerHeavyOriginal"
+              },
+              {
+                "keyword": "WeapMaterialFalmer"
+              },
+              {
+                "keyword": "WeapMaterialFalmerHoned"
+              },
+              {
+                "edidContains": "falmer"
+              },
+              {
+                "fullContains": "falmer"
+              }
+            ]
+          },
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_Falmer"
+            },
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_LearningEnabled"
+            },
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_LearningFalmer",
+              "operator": ">=",
+              "value": "CCO_LearningRequiredtoSmith"
+            }
+          ]
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Dwarven"
+              },
+              {
+                "fullContains": "Dwemer"
+              },
+              {
+                "fullContains": "Aetherium"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Dwemer"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Bosmer"
+              },
+              {
+                "edidContains": "Bosmer"
+              },
+              {
+                "fullContains": "Wood Elf"
+              },
+              {
+                "fullContains": "Wood Elv"
+              },
+              {
+                "fullContains": "Green Pact"
+              },
+              {
+                "fullContains": "Wild Hunt"
+              },
+              {
+                "fullContains": "Valenwood"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Bosmer"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialEbony"
+              },
+              {
+                "keyword": "WeapMaterialEbony"
+              },
+              {
+                "fullContains": "Dunmer"
+              },
+              {
+                "edidContains": "Dunmer"
+              },
+              {
+                "fullContains": "Dark Elf"
+              },
+              {
+                "fullContains": "Dark Elv"
+              },
+              {
+                "fullContains": "Morrowind"
+              },
+              {
+                "fullContains": "Telvanni"
+              },
+              {
+                "fullContains": "Redoran"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Dunmer"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "WAF_ArmorMaterialThalmor"
+              },
+              {
+                "fullContains": "Justiciar"
+              },
+              {
+                "fullContains": "Thalmor"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_FactionThalmor"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Aldmer"
+              },
+              {
+                "edidContains": "Aldmer"
+              },
+              {
+                "fullContains": "Altmer"
+              },
+              {
+                "edidContains": "Altmer"
+              },
+              {
+                "fullContains": "High Elf"
+              },
+              {
+                "fullContains": "High Elv"
+              },
+              {
+                "fullContains": "Summerset"
+              },
+              {
+                "fullContains": "Elven"
+              },
+              {
+                "edidContains": "Elven"
+              },
+              {
+                "fullContains": "Elvish"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Altmer"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Orcish"
+              },
+              {
+                "fullContains": "Orsimer"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Orsimer"
+        },
+        {
+          "match": {
+            "fullContains": "Ancient Nord"
+          },
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_NordAncient"
+            },
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_LearningEnabled"
+            },
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_LearningDraugr",
+              "operator": ">=",
+              "value": "CCO_LearningRequiredtoSmith"
+            }
+          ]
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Nordic"
+              },
+              {
+                "fullContains": "Norse"
+              },
+              {
+                "fullContains": "Skaal"
+              },
+              {
+                "fullContains": "Viking"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Nord"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "WAF_ArmorMaterialDraugr"
+              },
+              {
+                "keyword": "WeapMaterialDraugr"
+              },
+              {
+                "keyword": "WeapMaterialDraugrHoned"
+              },
+              {
+                "edidContains": "Draugr"
+              },
+              {
+                "fullContains": "Draugr"
+              }
+            ]
+          },
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_NordAncient"
+            },
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_LearningEnabled"
+            },
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_LearningDraugr",
+              "operator": ">=",
+              "value": "CCO_LearningRequiredtoSmith"
+            }
+          ]
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "DLC2ArmorMaterialNordicHeavy"
+              },
+              {
+                "keyword": "DLC2ArmorMaterialNordicLight"
+              },
+              {
+                "keyword": "DLC2WeapMaterialNordic"
+              },
+              {
+                "keyword": "WAF_MaterialNordic"
+              },
+              {
+                "fullContains": "Nord"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Nord"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialImperialHeavy"
+              },
+              {
+                "keyword": "ArmorMaterialImperialLight"
+              },
+              {
+                "keyword": "ArmorMaterialImperialStudded"
+              },
+              {
+                "keyword": "ArmorMaterialPenitus"
+              },
+              {
+                "keyword": "WeapMaterialImperial"
+              },
+              {
+                "fullContains": "Imperial"
+              },
+              {
+                "fullContains": "Cyrodiil"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Imperial"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialBearStormcloak"
+              },
+              {
+                "keyword": "ArmorMaterialStormcloak"
+              },
+              {
+                "fullContains": "Stormcloak"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_FactionStormcloak"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "WAF_WeapNightingale"
+              },
+              {
+                "fullContains": "Nightingale"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_FactionNightingale"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialDaedric"
+              },
+              {
+                "keyword": "WeapMaterialDaedric"
+              },
+              {
+                "fullContains": "Daedra"
+              },
+              {
+                "fullContains": "Daedric"
+              },
+              {
+                "fullContains": "Dremora"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Daedra"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialThievesGuild"
+              },
+              {
+                "keyword": "ArmorMaterialThievesGuildLeader"
+              },
+              {
+                "keyword": "WAF_ArmorMaterialTGLinwe"
+              },
+              {
+                "keyword": "WAF_ArmorMaterialTGSummerset"
+              },
+              {
+                "keyword": "WAF_WeapNightingale"
+              },
+              {
+                "fullContains": "Nightingale"
+              },
+              {
+                "fullContains": "Thieves"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_FactionThievesGuild"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorDarkBrotherhood"
+              },
+              {
+                "keyword": "WAF_ArmorDarkBrotherhoodAncient"
+              },
+              {
+                "fullContains": "Dark Brotherhood"
+              },
+              {
+                "fullContains": "Shrouded"
+              },
+              {
+                "fullContains": "Sithis"
+              },
+              {
+                "fullContains": "Morag Tong"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_FactionDarkBrotherhood"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "DLC1ArmorMaterialDawnguard"
+              },
+              {
+                "keyword": "WAF_DLC1WeapMaterialDawnguard"
+              },
+              {
+                "keyword": "DLC1ArmorMaterialHunter"
+              },
+              {
+                "fullContains": "Dawnguard"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_FactionDawnguard"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "DLC1ArmorMaterialVampire"
+              },
+              {
+                "fullContains": "Vampir"
+              },
+              {
+                "edidContains": "Vampir"
+              },
+              {
+                "fullContains": "Volkihar"
+              },
+              {
+                "edidContains": "Volkihar"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Vampire"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialBlades"
+              },
+              {
+                "keyword": "WAF_WeapMaterialBlades"
+              },
+              {
+                "fullContains": "Blades"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_FactionBlades"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialForsworn"
+              },
+              {
+                "keyword": "WAF_WeapMaterialForsworn"
+              },
+              {
+                "edidContains": "forsworn"
+              },
+              {
+                "fullContains": "forsworn"
+              }
+            ]
+          },
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeStyle_FactionForsworn"
+            },
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_LearningEnabled"
+            },
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_LearningForsworn",
+              "operator": ">=",
+              "value": "CCO_LearningRequiredtoSmith"
+            }
+          ]
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "WAF_ArmorWolf"
+              },
+              {
+                "fullContains": "Jorrvaskr"
+              },
+              {
+                "fullContains": "Wolf"
+              },
+              {
+                "fullContains": "Ysgramor"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_FactionCompanions"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "College"
+              },
+              {
+                "fullContains": "Mages Guild"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_FactionMagesGuild"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "WAF_ArmorMaterialGuard"
+              },
+              {
+                "fullContains": "Guard"
+              },
+              {
+                "fullContains": "Hold"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_FactionGuards"
+        },
+        {
+          "match": {
+            "keyword": "WAF_MaterialFaction"
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_FactionOther"
+        },
+        {
+          "comment": "default for anything not covered by a specific culture/faction",
+          "match": {
+            "not": {
+              "edidContains": "MenuOption"
+            }
+          },
+          "setGlobal": "CCO_CategoryForgeStyle_Misc"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: forge material: forge only, applies to any produced item regardless of record type",
+      "benchKeyword": [
+        "CraftingSmithingForge",
+        "CraftingSmithingSkyforge",
+        "DLC1LD_CraftingForgeAetherium",
+        "DLC1CraftingDawnguard"
+      ],
+      "rules": [
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialDaedric"
+              },
+              {
+                "keyword": "WeapMaterialDaedric"
+              },
+              {
+                "fullContains": "Daedra"
+              },
+              {
+                "fullContains": "Daedric"
+              },
+              {
+                "fullContains": "Dremora"
+              }
+            ]
+          },
+          "conditions": [
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_OptionCraftDaedricOnlyAtNight",
+              "value": "0",
+              "logic": "OR"
+            },
+            {
+              "function": "GetCurrentTime",
+              "operator": "<=",
+              "value": "6",
+              "logic": "OR"
+            },
+            {
+              "function": "GetCurrentTime",
+              "operator": ">=",
+              "value": "21"
+            },
+            {
+              "function": "GetGlobalValue",
+              "param1": "CCO_CategoryForgeMaterial_Daedric"
+            }
+          ]
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialEbony"
+              },
+              {
+                "keyword": "WeapMaterialEbony"
+              },
+              {
+                "fullContains": "Ebony"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Ebony"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialDragonplate"
+              },
+              {
+                "keyword": "ArmorMaterialDragonscale"
+              },
+              {
+                "keyword": "DLC1WeapMaterialDragonbone"
+              },
+              {
+                "fullContains": "Alduin"
+              },
+              {
+                "fullContains": "Dragon"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Dragon"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Gold"
+              },
+              {
+                "edidContains": "Gold"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Gold"
+        },
+        {
+          "comment": "verbatim from CCOR: glass-named vendor clutter (e.g. glass bottles) is filed as a tool recipe, not a forge material, upstream",
+          "match": {
+            "all": [
+              {
+                "keyword": "VendorItemClutter"
+              },
+              {
+                "fullContains": "Glass"
+              }
+            ]
+          },
+          "setGlobal": "CCO_MiscToolRecipes"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialGlass"
+              },
+              {
+                "keyword": "WeapMaterialGlass"
+              },
+              {
+                "fullContains": "Glass"
+              },
+              {
+                "fullContains": "Malachite"
+              },
+              {
+                "fullContains": "Moldavite"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Glass"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "DLC2ArmorMaterialStalhrimHeavy"
+              },
+              {
+                "keyword": "DLC2ArmorMaterialStalhrimLight"
+              },
+              {
+                "keyword": "DLC2WeapMaterialStalhrim"
+              },
+              {
+                "fullContains": "Stalhrim"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Stalhrim"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Quicksilver"
+              },
+              {
+                "edidContains": "Quicksilver"
+              },
+              {
+                "fullContains": "Mithril"
+              },
+              {
+                "edidContains": "Mithril"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Quicksilver"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "WeapMaterialSilver"
+              },
+              {
+                "keyword": "WAF_MaterialSilver"
+              },
+              {
+                "fullContains": "Silver"
+              },
+              {
+                "edidContains": "Silver"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Silver"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Copper"
+              },
+              {
+                "edidContains": "Copper"
+              },
+              {
+                "fullContains": "Brass"
+              },
+              {
+                "fullContains": "Bronze"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Copper"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Calcinium"
+              },
+              {
+                "edidContains": "Calcinium"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Calcinium"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Galatite"
+              },
+              {
+                "edidContains": "Galatite"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Galatite"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialDwarven"
+              },
+              {
+                "keyword": "DLC1LD_CraftingMaterialAetherium"
+              },
+              {
+                "keyword": "WeapMaterialDwarven"
+              },
+              {
+                "fullContains": "Dwarven Metal"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Dwarven"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialElven"
+              },
+              {
+                "keyword": "ArmorMaterialElvenGilded"
+              },
+              {
+                "keyword": "WeapMaterialElven"
+              },
+              {
+                "fullContains": "Moonstone"
+              },
+              {
+                "edidContains": "Moonstone"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Moonstone"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialOrcish"
+              },
+              {
+                "keyword": "WeapMaterialOrcish"
+              },
+              {
+                "fullContains": "Orichalcum"
+              },
+              {
+                "edidContains": "Orichalcum"
+              },
+              {
+                "fullContains": "Jade"
+              },
+              {
+                "edidContains": "Jade"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Orichalcum"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "DLC2ArmorMaterialChitinHeavy"
+              },
+              {
+                "keyword": "DLC2ArmorMaterialChitinLight"
+              },
+              {
+                "keyword": "DLC2ArmorMaterialMoragTong"
+              },
+              {
+                "keyword": "WAF_MaterialChitin"
+              },
+              {
+                "fullContains": "Chitin"
+              },
+              {
+                "keyword": "ArmorMaterialFalmer"
+              },
+              {
+                "keyword": "WeapMaterialFalmer"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Chitin"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Bone"
+              },
+              {
+                "fullContains": "Tooth"
+              },
+              {
+                "fullContains": "Tusk"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Bone"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "DLC2ArmorMaterialBonemoldHeavy"
+              },
+              {
+                "keyword": "DLC2ArmorMaterialBonemoldLight"
+              },
+              {
+                "keyword": "WAF_MaterialBonemold"
+              },
+              {
+                "fullContains": "Bonemold"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Bonemold"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "WeapMaterialWood"
+              },
+              {
+                "fullContains": "Wood"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Wood"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Stone"
+              },
+              {
+                "fullContains": "Flint"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Stone"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialIron"
+              },
+              {
+                "keyword": "ArmorMaterialIronBanded"
+              },
+              {
+                "keyword": "WeapMaterialIron"
+              },
+              {
+                "fullContains": "Iron"
+              },
+              {
+                "keyword": "WAF_ArmorMaterialDraugr"
+              },
+              {
+                "keyword": "WeapMaterialDraugr"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Iron"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialSteel"
+              },
+              {
+                "keyword": "ArmorMaterialSteelPlate"
+              },
+              {
+                "keyword": "WeapMaterialSteel"
+              },
+              {
+                "fullContains": "Steel"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Steel"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialLeather"
+              },
+              {
+                "fullContains": "Leather"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Leather"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialHide"
+              },
+              {
+                "keyword": "ArmorMaterialScaled"
+              },
+              {
+                "keyword": "ArmorMaterialStudded"
+              },
+              {
+                "fullContains": "Fur"
+              },
+              {
+                "fullContains": "Hide"
+              },
+              {
+                "fullContains": "Pelt"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Hide"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "WAF_MaterialArcane"
+              },
+              {
+                "recipeHasCondition": "ArcaneBlacksmith"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Arcane"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorClothing"
+              },
+              {
+                "fullContains": "Robe"
+              },
+              {
+                "fullContains": "Cloth"
+              },
+              {
+                "fullContains": "Linen"
+              },
+              {
+                "edidContains": "Robe"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Cloth"
+        },
+        {
+          "comment": "default for anything not covered by a specific material",
+          "match": {
+            "not": {
+              "edidContains": "MenuOption"
+            }
+          },
+          "setGlobal": "CCO_CategoryForgeMaterial_Misc"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: Skyforge is exclusive to the Orcish Wrist-Wraps/Skyforge Steel style regardless of anything else about the recipe",
+      "benchKeyword": [
+        "CraftingSmithingSkyforge"
+      ],
+      "rules": [
+        {
+          "setGlobal": "CCO_CategoryForgeMaterialOR_Skyforge"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: generic 'this recipe is now CCO-aware' marker: forge only, skipped for recipes already handled by something more specific",
+      "benchKeyword": [
+        "CraftingSmithingForge",
+        "CraftingSmithingSkyforge",
+        "DLC1LD_CraftingForgeAetherium",
+        "DLC1CraftingDawnguard"
+      ],
+      "rules": [
+        {
+          "match": {
+            "all": [
+              {
+                "not": {
+                  "recipeHasCondition": [
+                    "CCO_MODSupported",
+                    "CCO_OptionBreakdownEquipmentatSmelter",
+                    "CCO_OptionBreakdownEquipmentatTanningRack",
+                    "CCO_CCOAddedRecipes",
+                    "CCO_DisableIfCCOisInstalled",
+                    "CCO_VanillaRecipe",
+                    "CCO_DLCDawnguard",
+                    "CCO_DLCHearthfire",
+                    "CCO_DLCDragonborn",
+                    "CCO_MODStealthSkillsRebalanced",
+                    "CCO_MODImmersiveArmors",
+                    "CCO_MODImmersiveWeapons",
+                    "CCO_MODJaysusSwords",
+                    "CCO_MODHeavyArmory",
+                    "CCO_MODJewelCraft",
+                    "CCO_MODBandoliers",
+                    "CCO_MODBookofSilence",
+                    "CCO_MODCampfire",
+                    "CCO_MODWinterIsComing",
+                    "CCO_MODCloaks",
+                    "CCO_MODImmersiveJewelry",
+                    "CACO_CACOAddedRecipes",
+                    "CCO_OptionCraftingMenuOptions"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "edidContains": "MenuOption"
+                }
+              },
+              {
+                "not": {
+                  "recipeEdidContains": [
+                    "Breakdown",
+                    "Learn"
+                  ]
+                }
+              }
+            ]
+          },
+          "setGlobal": "CCO_MODSupported"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: generic 'this recipe is now CCO-aware' marker: tanning rack only (separate exclusion list from forge's, matching upstream's own slightly different lists)",
+      "benchKeyword": [
+        "CraftingTanningRack"
+      ],
+      "rules": [
+        {
+          "match": {
+            "all": [
+              {
+                "not": {
+                  "recipeHasCondition": [
+                    "CCO_MODSupported",
+                    "CCO_OptionBreakdownEquipmentatSmelter",
+                    "CCO_OptionBreakdownEquipmentatTanningRack",
+                    "CCO_CCOAddedRecipes",
+                    "CCO_DisableIfCCOisInstalled",
+                    "CCO_VanillaRecipe",
+                    "CCO_DLCDawnguard",
+                    "CCO_DLCHearthfire",
+                    "CCO_DLCDragonborn",
+                    "CCO_MODStealthSkillsRebalanced",
+                    "CCO_MODImmersiveArmors",
+                    "CCO_MODImmersiveWeapons",
+                    "CCO_MODJaysusSwords",
+                    "CCO_MODHeavyArmory",
+                    "CCO_MODJewelCraft",
+                    "CCO_MODBandoliers",
+                    "CCO_MODBookofSilence",
+                    "CCO_MODFrostfall",
+                    "CCO_MODWinterIsComing",
+                    "CCO_MODCloaks",
+                    "CCO_MODImmersiveJewelry",
+                    "CACO_CACOAddedRecipes",
+                    "CCO_OptionCraftingMenuOptions"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "fullContains": "Fur Plate"
+                }
+              },
+              {
+                "not": {
+                  "recipeEdidContains": [
+                    "Breakdown",
+                    "Learn"
+                  ]
+                }
+              }
+            ]
+          },
+          "setGlobal": "CCO_MODSupported"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: smelter breakdown-equipment flag",
+      "benchKeyword": [
+        "CraftingSmelter"
+      ],
+      "rules": [
+        {
+          "match": {
+            "recipeEdidContains": "Breakdown"
+          },
+          "setGlobal": "CCO_OptionBreakdownEquipmentatSmelter"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: smelter output category (what raw material this smelter recipe produces)",
+      "benchKeyword": [
+        "CraftingSmelter"
+      ],
+      "rules": [
+        {
+          "match": {
+            "fullContains": "Iron"
+          },
+          "setGlobal": "CCO_CategorySmelter_Iron"
+        },
+        {
+          "match": {
+            "fullContains": "Steel"
+          },
+          "setGlobal": "CCO_CategorySmelter_Steel"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Corundum"
+              },
+              {
+                "fullContains": "Copper"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategorySmelter_Corundum"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Dwarven"
+              },
+              {
+                "fullContains": "Dwemer"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategorySmelter_Dwarven"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Charcoal"
+              },
+              {
+                "fullContains": "Coal"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategorySmelter_Charcoal"
+        },
+        {
+          "match": {
+            "fullContains": "Gold"
+          },
+          "setGlobal": "CCO_CategorySmelter_Gold"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Quicksilver"
+              },
+              {
+                "fullContains": "Mithril"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategorySmelter_Quicksilver"
+        },
+        {
+          "match": {
+            "fullContains": "Silver"
+          },
+          "setGlobal": "CCO_CategorySmelter_Silver"
+        },
+        {
+          "match": {
+            "fullContains": "Moonstone"
+          },
+          "setGlobal": "CCO_CategorySmelter_Moonstone"
+        },
+        {
+          "match": {
+            "fullContains": "Orichalcum"
+          },
+          "setGlobal": "CCO_CategorySmelter_Orichalcum"
+        },
+        {
+          "match": {
+            "edidContains": "BYOHMaterialGlass"
+          },
+          "setGlobal": "CCO_CategorySmelter_Misc"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Glass"
+              },
+              {
+                "fullContains": "Malachite"
+              },
+              {
+                "fullContains": "Moldavite"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategorySmelter_Glass"
+        },
+        {
+          "match": {
+            "fullContains": "Ebony"
+          },
+          "setGlobal": "CCO_CategorySmelter_Ebony"
+        },
+        {
+          "match": {
+            "fullContains": "Stalhrim"
+          },
+          "setGlobal": "CCO_CategorySmelter_Stalhrim"
+        },
+        {
+          "match": {
+            "fullContains": "Calcinium"
+          },
+          "setGlobal": "CCO_CategorySmelter_Calcinium"
+        },
+        {
+          "match": {
+            "fullContains": "Galatite"
+          },
+          "setGlobal": "CCO_CategorySmelter_Galatite"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Bone"
+              },
+              {
+                "fullContains": "Leather"
+              },
+              {
+                "fullContains": "Chitin"
+              },
+              {
+                "fullContains": "Hide"
+              },
+              {
+                "fullContains": "Fur"
+              },
+              {
+                "fullContains": "Scale"
+              },
+              {
+                "fullContains": "Wood"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategorySmelter_Organics"
+        },
+        {
+          "comment": "default",
+          "match": {
+            "not": {
+              "edidContains": "MenuOption"
+            }
+          },
+          "setGlobal": "CCO_CategorySmelter_Misc"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: tanning rack breakdown-equipment flag",
+      "benchKeyword": [
+        "CraftingTanningRack"
+      ],
+      "rules": [
+        {
+          "match": {
+            "recipeEdidContains": "Breakdown"
+          },
+          "setGlobal": "CCO_OptionBreakdownEquipmentatTanningRack"
+        }
+      ]
+    },
+    {
+      "comment": "CCOR: tanning rack output category (what raw material this tanning rack recipe produces)",
+      "benchKeyword": [
+        "CraftingTanningRack"
+      ],
+      "rules": [
+        {
+          "match": {
+            "any": [
+              {
+                "keyword": "ArmorMaterialHide"
+              },
+              {
+                "keyword": "ArmorMaterialScaled"
+              },
+              {
+                "keyword": "ArmorMaterialStudded"
+              },
+              {
+                "fullContains": "Fur"
+              },
+              {
+                "fullContains": "Hide"
+              },
+              {
+                "fullContains": "Pelt"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryTanRack_Hide"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Leather"
+              },
+              {
+                "keyword": "ArmorMaterialLeather"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryTanRack_Leather"
+        },
+        {
+          "match": {
+            "any": [
+              {
+                "fullContains": "Cloth"
+              },
+              {
+                "keyword": "ArmorClothing"
+              },
+              {
+                "keyword": "WAF_ClothingCloak"
+              },
+              {
+                "fullContains": "Cloak"
+              },
+              {
+                "fullContains": "Cape"
+              },
+              {
+                "fullContains": "Linen"
+              }
+            ]
+          },
+          "setGlobal": "CCO_CategoryTanRack_Cloth"
+        },
+        {
+          "comment": "default",
+          "match": {
+            "not": {
+              "edidContains": "MenuOption"
+            }
+          },
+          "setGlobal": "CCO_CategoryTanRack_Misc"
+        }
+      ]
+    }
+  ]
+}

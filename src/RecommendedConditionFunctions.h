@@ -3,21 +3,21 @@
 namespace RPP::RecommendedConditions
 {
 	// A curated subset of Skyrim's ~750 condition functions that actually
-	// make sense on a crafting recipe - as opposed to the full
+	// make sense on a crafting recipe, as opposed to the full
 	// ConditionFunctionTable.h list, which includes hundreds of functions
 	// about combat, dialogue, AI packages, and other things with no sane
 	// meaning on a COBJ record. This list is what drives the Function
 	// field's autocomplete suggestions in the in-game editor; it does NOT
-	// restrict what you can actually type - Conditions.cpp resolves against
+	// restrict what you can actually type. Conditions.cpp resolves against
 	// the full table regardless, so any function not listed here still
 	// works if you type its exact name, autocomplete or not.
 	// What param1 expects, so the editor can suggest only sensible
-	// candidates instead of every EditorID in the game. Suggestions only -
+	// candidates instead of every EditorID in the game. Suggestions only;
 	// the resolver still accepts anything you hand-write in the JSON.
 	enum class ParamKind
 	{
 		kNone,           // function takes no param1
-		kAny,            // unknown - fall back to the full EditorID list
+		kAny,            // unknown, fall back to the full EditorID list
 		kCraftableItem,  // MISC/ARMO/WEAP/INGR/ALCH/BOOK/KEYM
 		kPerk,           // PERK
 		kSpell,          // SPEL
@@ -34,7 +34,7 @@ namespace RPP::RecommendedConditions
 		const char* name;
 		const char* usage;  // plain-language hint: what param1/param2/value mean
 
-		// If true, this function's result is a plain boolean (0 or 1) -
+		// If true, this function's result is a plain boolean (0 or 1);
 		// the in-game editor shows a True/False dropdown for the Value
 		// field instead of a raw number field for these. Functions whose
 		// result is a genuine number (a count, a stage, a level, ...) or
@@ -62,9 +62,9 @@ namespace RPP::RecommendedConditions
 		{ "GetPCIsRace", "param1 = race (EditorID or FormID). value = true or false.", true, ParamKind::kRace },
 		{ "GetPCIsSex", "param1 = 0 for Male, 1 for Female. value = true or false.", true, ParamKind::kSex },
 		{ "GetRandomPercent", "No params. Returns a random whole number 0-99. For an N% chance, use "
-			"operator '<' with value N (e.g. value=1 gives a 1% chance - only rolling 0 satisfies it).", false, ParamKind::kNone },
+			"operator '<' with value N (e.g. value=1 gives a 1% chance; only rolling 0 satisfies it).", false, ParamKind::kNone },
 		{ "GetLevel", "No params. Returns the player character's level, compared against value.", false, ParamKind::kNone },
-		{ "GetActorValue", "param1 = an Actor Value ID (0-163) or name (e.g. \"Smithing\" - autocomplete offers the full list). "
+		{ "GetActorValue", "param1 = an Actor Value ID (0-163) or name (e.g. \"Smithing\"; autocomplete offers the full list). "
 			"Returns that Actor Value as a float, compared against value.", false, ParamKind::kActorValue },
 		{ "GetCurrentTime", "No params. Returns the current in-game time as a decimal (e.g. 4:30am = 4.5, "
 			"7:45pm = 19.75), compared against value.", false, ParamKind::kNone },

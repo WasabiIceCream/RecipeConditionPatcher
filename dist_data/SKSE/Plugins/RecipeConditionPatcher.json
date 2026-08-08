@@ -1,30 +1,9 @@
 {
-  "//": "Full documentation of this file's format is in the README.",
+  "//": "Full documentation of this file's format is in the README. The default material->perk mappings ship separately in MatsNeedPerks_RCP.json (see the README's 'Adding your own config as a separate mod' section); this file only holds settings and an example recipeOverrides entry.",
 
   "enabled": true,
   "existingPerkMode": 0,
   "logLevel": 0,
-
-  "mappings": [
-    { "material": "IngotSteel", "perk": "SteelSmithing", "comment": "Steel Ingot -> Steel Smithing (base game)" },
-    { "material": "ingotSilver", "perk": "SteelSmithing", "comment": "Silver Ingot -> Steel Smithing (base game)" },
-    { "material": "IngotDwarven", "perk": "DwarvenSmithing", "comment": "Dwarven Metal Ingot -> Dwarven Smithing (base game)" },
-    { "material": "IngotQuicksilver", "perk": "ElvenSmithing", "comment": "Quicksilver Ingot -> Elven Smithing (base game)" },
-    { "material": "IngotIMoonstone", "perk": "ElvenSmithing", "comment": "Refined Moonstone -> Elven Smithing (base game)" },
-    { "material": "IngotOrichalcum", "perk": "OrcishSmithing", "comment": "Orichalcum Ingot -> Orcish Smithing (base game)" },
-    { "material": "IngotMalachite", "perk": "GlassSmithing", "comment": "Refined Malachite -> Glass Smithing (base game)" },
-    { "material": "IngotEbony", "perk": "EbonySmithing", "comment": "Ebony Ingot -> Ebony Smithing (base game)" },
-    { "material": "DaedraHeart", "perk": "DaedricSmithing", "comment": "Daedra Heart -> Daedric Smithing (base game)" },
-    { "material": "IngotCorundum", "perk": "AdvancedArmors", "comment": "Corundum Ingot -> Advanced Armors (base game)" },
-    { "material": "DragonBone", "perk": "DragonArmor", "comment": "Dragon Bone -> Dragon Armor (base game)" },
-    { "material": "DragonScales", "perk": "DragonArmor", "comment": "Dragon Scales -> Dragon Armor (base game)" },
-    { "material": "BoneMeal", "perk": "SteelSmithing", "comment": "Bone Meal -> Steel Smithing (Dragonborn, Bonemold armor)" },
-    { "material": "DLC2ChitinPlate", "perk": "ElvenSmithing", "comment": "Chitin Plate -> Elven Smithing (Dragonborn, Chitin armor)" },
-    { "material": "DLC2NetchLeather", "perk": "ElvenSmithing", "comment": "Netch Leather -> Elven Smithing (Dragonborn)" },
-    { "material": "DLC2OreStalhrim", "perk": "EbonySmithing", "comment": "Stalhrim Ore -> Ebony Smithing (Dragonborn)" },
-    { "material": "ccBGSSSE025_IngotAmber", "perk": "GlassSmithing", "comment": "'Saints & Seducers' Amber Ingot -> Glass Smithing (Creation Club)" },
-    { "material": "ccBGSSSE025_IngotMadness", "perk": "EbonySmithing", "comment": "'Saints & Seducers' Madness Ingot -> Ebony Smithing (Creation Club)" }
-  ],
 
   "recipeOverrides": [
     {

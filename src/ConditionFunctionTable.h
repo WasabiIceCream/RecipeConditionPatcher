@@ -1,8 +1,8 @@
 // AUTO-EXTRACTED from CommonLibSSE's RE::FUNCTION_DATA::FunctionID enum
-// (include/RE/T/TESCondition.h) - mechanically generated, not hand-typed,
+// (include/RE/T/TESCondition.h). Mechanically generated, not hand-typed,
 // so the name<->ID mapping itself is guaranteed accurate. This does NOT
 // mean every function here is meaningful as a COBJ recipe condition, or
-// that its parameter types/encoding are known - see Conditions.h's top
+// that its parameter types/encoding are known. See Conditions.h's top
 // comment and the README for what that means in practice.
 #pragma once
 

@@ -3,7 +3,7 @@
 // MUST be defined before anything that might pull in <windows.h> (which
 // both RE/Skyrim.h and extern/SKSEMenuFramework.h do transitively).
 // Without this, windows.h's own min(a,b)/max(a,b) macros silently rewrite
-// any std::min/std::max call in the entire project into garbage - this bit
+// any std::min/std::max call in the entire project into garbage. This bit
 // UIMappingsEditor.cpp the moment it used std::min, even though the macro
 // pollution had actually been present since UI.cpp first included
 // SKSEMenuFramework.h; it just hadn't been triggered by anything yet.

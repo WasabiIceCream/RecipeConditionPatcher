@@ -16,13 +16,13 @@ namespace RPP
 
 			// Fast reject before touching std::stof. Params are usually
 			// EditorIDs ("EbonySmithing"), and std::stof signals "not a
-			// number" by THROWING - which is expensive (stack unwinding,
+			// number" by THROWING, which is expensive (stack unwinding,
 			// RTTI) and was happening on essentially every param lookup,
 			// tens of thousands of times per patch pass. A real numeric
 			// literal can only begin with a digit, sign, or decimal point
 			// (stof also skips leading whitespace, so let that through and
 			// have stof do the real work). The try/catch below still
-			// covers the genuine edge cases this check can't - a lone "+",
+			// covers the genuine edge cases this check can't: a lone "+",
 			// or a value too large to represent.
 			const unsigned char first = static_cast<unsigned char>(a_text.front());
 			const bool couldBeNumber =
@@ -43,7 +43,7 @@ namespace RPP
 		}
 
 		// Same as TryParseNumber, but also accepts "true"/"false"
-		// (case-insensitive) as 1/0 - for hand-edited JSON on the "value"
+		// (case-insensitive) as 1/0, for hand-edited JSON on the "value"
 		// field specifically. Not used for param1/param2, which have no
 		// reason to accept true/false as a valid value.
 		bool TryParseNumberOrBool(const std::string& a_text, float& a_out)
@@ -72,7 +72,7 @@ namespace RPP
 		// mechanically-extracted table. Cached: AddConditionIfMissing is
 		// called once per recipe that shares a mapped material, so the
 		// same function name (e.g. "HasPerk") can be looked up thousands
-		// of times in a single pass - a linear scan over 736 entries
+		// of times in a single pass; a linear scan over 736 entries
 		// every single time is wasted work once the answer's already
 		// known.
 		bool ResolveFunctionID(const std::string& a_function, int& a_out)
@@ -101,7 +101,7 @@ namespace RPP
 			return false;
 		}
 
-		// A param slot is either empty (unused - resolves to nullptr,
+		// A param slot is either empty (unused, resolves to nullptr,
 		// always "success"), a plain number (stored as a raw 32-bit
 		// integer in the pointer slot), or an identifier (resolved via
 		// the same TESForm lookup used for materials/perks/recipes
@@ -131,8 +131,8 @@ namespace RPP
 		// confirmed against a live game install and the Creation Kit
 		// wiki's own Actor Value ID list) or an Actor Value name from
 		// ActorValueTable.h (e.g. "Smithing"). Deliberately does NOT fall
-		// through to generic TESForm resolution the way ResolveParam does
-		// - Actor Values aren't forms, so attempting that risks a
+		// through to generic TESForm resolution the way ResolveParam does.
+		// Actor Values aren't forms, so attempting that risks a
 		// misleading match against an unrelated form that happens to
 		// share the same EditorID text.
 		bool ResolveActorValueParam(const std::string& a_param, void*& a_out)
@@ -171,7 +171,7 @@ namespace RPP
 
 		// RunOn:: only defines 0-8 (kSubject..kCommandTarget). Unlike
 		// "operator", which is a validated string, "runOn" is stored as a
-		// raw int straight from JSON - a typo (e.g. "runOn": 99) would
+		// raw int straight from JSON; a typo (e.g. "runOn": 99) would
 		// otherwise silently become an out-of-range CONDITIONITEMOBJECT
 		// value with no validation catching it.
 		bool ValidateRunOn(int a_runOn)
@@ -200,7 +200,7 @@ namespace RPP
 			// GetActorValue's param1 needs its own resolution path (a
 			// number 0-163 or an Actor Value name) rather than the
 			// generic form/number handling every other function's params
-			// use - compared against the resolved numeric ID rather than
+			// use; compared against the resolved numeric ID rather than
 			// the raw "function" string, so this correctly applies
 			// whether someone wrote "GetActorValue" or "14".
 			constexpr int kGetActorValueID = 14;

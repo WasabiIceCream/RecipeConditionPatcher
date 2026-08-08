@@ -126,7 +126,7 @@ namespace RPP::ConfigFile
 				file >> j;
 
 				// Settings only make sense coming from the one main file a
-				// player actually controls - a third-party file setting
+				// player actually controls. A third-party file setting
 				// these would let any installed mod silently change
 				// another mod's settings, which is a bad, easily-abused
 				// precedent. Warn rather than silently ignore, so a mod
@@ -135,7 +135,7 @@ namespace RPP::ConfigFile
 				for (const char* key : { "enabled", "existingPerkMode", "logLevel" }) {
 					if (j.contains(key)) {
 						SKSE::log::warn("external config '{}' sets \"{}\", which is ignored outside the main "
-							"{} - only \"mappings\"/\"recipeOverrides\" are read from external config files",
+							"{}: only \"mappings\"/\"recipeOverrides\" are read from external config files",
 							path, key, kPath);
 					}
 				}

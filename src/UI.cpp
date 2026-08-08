@@ -2,13 +2,14 @@
 
 #include "RecipePatcher.h"
 #include "Settings.h"
+#include "UIClassifiersEditor.h"
 #include "UIMappingsEditor.h"
 
 #include "SKSEMenuFramework.h"
 
 // In this build of the vendored header, the ImGui wrapper functions
 // (Checkbox, TextWrapped, Combo, etc.) live in namespace ImGuiMCP, not a
-// bare "ImGui" - this alias lets the rest of this file use the more
+// bare "ImGui"; this alias lets the rest of this file use the more
 // familiar ImGui:: spelling without changing every call site.
 #include "UIStyle.h"
 
@@ -20,7 +21,7 @@ namespace RPP::UI
 	{
 		// Vertical gap between major sections. A bit more breathing room
 		// than a single Spacing()/Separator() gives on its own.
-		// NOTE: ImVec2 here is a plain aggregate (just float x, y - no
+		// NOTE: ImVec2 here is a plain aggregate (just float x, y, no
 		// constructor), so it needs brace-init, not ImVec2(0.0f, 12.0f).
 		void BigGap()
 		{
@@ -29,7 +30,7 @@ namespace RPP::UI
 
 		void __stdcall Render()
 		{
-			// Shared palette - keeps this tab consistent with Mappings and
+			// Shared palette, keeps this tab consistent with Mappings and
 			// makes the Log Verbosity / Existing Conditions dropdown lists
 			// opaque instead of letting the page bleed through them.
 			Style::Push();
@@ -40,7 +41,7 @@ namespace RPP::UI
 			ImGui::TextWrapped(
 				"Adds matching conditions (perk requirements, item checks, "
 				"quest gates, and more) to any recipe that uses a mapped "
-				"material - e.g. Ebony Ingot -> requires Ebony Smithing. "
+				"material, e.g. Ebony Ingot -> requires Ebony Smithing. "
 				"See the Mappings tab to configure what.");
 
 			BigGap();
@@ -69,7 +70,7 @@ namespace RPP::UI
 
 			ImGui::TextWrapped(
 				"How to handle a recipe that already has at least one "
-				"condition - from vanilla, another mod, or an earlier run "
+				"condition, from vanilla, another mod, or an earlier run "
 				"of this plugin.");
 
 			ImGui::Spacing();
@@ -108,7 +109,7 @@ namespace RPP::UI
 			ImGui::TextWrapped("\"Replace Existing\" mode genuinely removes conditions live.");
 			ImGui::TextWrapped(
 				"\"Add to Existing\" mode, though, only affects what "
-				"gets added going forward - it won't un-add a "
+				"gets added going forward. It won't un-add a "
 				"requirement it already added under different settings "
 				"earlier this session.");
 
@@ -135,6 +136,7 @@ namespace RPP::UI
 		SKSEMenuFramework::SetSection("Recipe Condition Patcher");
 		SKSEMenuFramework::AddSectionItem("Settings", Render);
 		SKSEMenuFramework::AddSectionItem("Mappings", MappingsEditor::Render);
+		SKSEMenuFramework::AddSectionItem("Classifiers", ClassifiersEditor::Render);
 		SKSE::log::info("registered SKSE Menu Framework menu");
 	}
 }

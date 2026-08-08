@@ -9,11 +9,11 @@ namespace RPP
 	//     cases where a mod's EditorIDs aren't guaranteed stable across
 	//     its own updates but its FormIDs are. The FormID half is the
 	//     record's raw local FormID exactly as shown in SSEEdit/xEdit for
-	//     that specific plugin file (no leading zeros needed) - the top
+	//     that specific plugin file (no leading zeros needed); the top
 	//     byte (load index) is replaced automatically based on the
 	//     current load order, same convention used by tools like SPID.
 	//
-	// Deliberately silent (no logging) - it's reused for the in-game
+	// Deliberately silent (no logging). It's reused for the in-game
 	// editor's live per-keystroke validation, where logging every failed
 	// lookup while someone's mid-way through typing an ID would spam the
 	// log. Callers on the runtime patching path log their own warnings

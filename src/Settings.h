@@ -2,11 +2,11 @@
 
 namespace RPP
 {
-	// Named values for Settings::existingPerkMode - how to handle a recipe
+	// Named values for Settings::existingPerkMode: how to handle a recipe
 	// that already has at least one condition of any kind, from vanilla,
 	// another mod, or an earlier run of this plugin. (The name keeps
 	// "PerkMode" for historical reasons from before conditions were
-	// generalized beyond HasPerk - the concept itself now applies to any
+	// generalized beyond HasPerk. The concept itself now applies to any
 	// condition this plugin adds.)
 	namespace ExistingPerkMode
 	{
@@ -27,18 +27,21 @@ namespace RPP
 	};
 
 	// Loads settings from Data/SKSE/Plugins/RecipeConditionPatcher.json if
-	// present, otherwise returns the struct defaults above. This is the
-	// SAME file TriggerConfig.cpp reads for material->condition mappings -
-	// settings live under their own top-level keys ("enabled",
-	// "existingPerkMode", "logLevel") alongside "mappings" in one shared
-	// file, so there's only one file to look at/edit rather than several.
+	// present, otherwise returns the struct defaults above. Settings only
+	// ever live in this ONE file, under their own top-level keys
+	// ("enabled", "existingPerkMode", "logLevel"), unlike "mappings"/
+	// "recipeOverrides"/"classifiers", which this same file can also hold
+	// but which are just as commonly split out into *_RCP.json files (see
+	// TriggerConfig.cpp/RecipeOverrides.cpp/Classifiers.cpp); external
+	// config files' copies of these settings keys are ignored on purpose
+	// (see ConfigFile::ReadExternalConfigs).
 	Settings LoadSettings();
 
 	// Writes the current settings back into
 	// Data/SKSE/Plugins/RecipeConditionPatcher.json, preserving whatever
-	// "mappings" content is already in that file (a read-modify-write, not
-	// a blind overwrite - see Settings.cpp). Called automatically whenever
-	// a control in the in-game menu changes.
+	// "mappings"/"recipeOverrides"/"classifiers" content is already in that
+	// file (a read-modify-write, not a blind overwrite; see Settings.cpp).
+	// Called automatically whenever a control in the in-game menu changes.
 	void SaveSettings(const Settings& a_settings);
 
 	// Process-wide live settings, lazily loaded from disk on first access.

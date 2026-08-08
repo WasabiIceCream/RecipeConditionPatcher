@@ -15,7 +15,7 @@ namespace RPP::UI::Style
 	// and become genuinely hard to read.
 	inline constexpr ImGui::ImVec4 kOpaqueBg{ 0.10f, 0.10f, 0.12f, 1.0f };
 
-	// Slightly brighter than the framework defaults - against this dark
+	// Slightly brighter than the framework defaults. Against this dark
 	// background the stock body and "disabled" greys are dim enough to be
 	// a real readability problem, especially for the explanatory lines
 	// that sit under most controls.
@@ -44,7 +44,7 @@ namespace RPP::UI::Style
 		ImGui::PopStyleColor(4);
 	}
 
-	// A wrapped, muted explanatory line - the standard "what does this
+	// A wrapped, muted explanatory line, the standard "what does this
 	// control do" text under a widget.
 	inline void Hint(const char* a_text)
 	{

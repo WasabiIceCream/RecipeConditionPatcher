@@ -9,7 +9,7 @@ namespace RPP
 		// IMPORTANT: do NOT build these from TESForm::GetFormEditorID().
 		// That virtual's base implementation just returns "", and only a
 		// handful of form types override it (TESGlobal, BGSKeyword,
-		// TESRace, ...) - the game doesn't retain EditorIDs in memory for
+		// TESRace, ...). The game doesn't retain EditorIDs in memory for
 		// most records. None of the types this plugin cares about
 		// (BGSConstructibleObject, TESObjectMISC/ARMO/WEAP, IngredientItem,
 		// AlchemyItem, TESObjectBOOK, TESKey) override it, so asking a
@@ -35,14 +35,14 @@ namespace RPP
 			return {};
 		}
 
-		// "ARMO - Skyrim.esm". GetFile(0) is the ORIGINAL source plugin,
+		// "ARMO (Skyrim.esm)". GetFile(0) is the ORIGINAL source plugin,
 		// not whichever mod overrode the record last (see the same note in
 		// RecipePatcher.cpp's DescribeRecipe).
 		std::string MakeDetail(const RE::TESForm* a_form)
 		{
 			const std::string_view code = FormTypeCode(a_form->GetFormType());
 			auto* file = a_form->GetFile(0);
-			// See DescribeRecipe in RecipePatcher.cpp - runtime-created
+			// See DescribeRecipe in RecipePatcher.cpp. Runtime-created
 			// forms have no source file and that is expected, not an error.
 			const std::string_view plugin = file ? file->GetFilename() :
 				(a_form->IsDynamicForm() ? std::string_view{ "dynamic" } : std::string_view{});
@@ -56,7 +56,7 @@ namespace RPP
 			if (code.empty()) {
 				return std::string{ plugin };
 			}
-			return fmt::format("{} - {}", code, plugin);
+			return fmt::format("{} ({})", code, plugin);
 		}
 
 		struct Caches
@@ -65,7 +65,7 @@ namespace RPP
 			std::vector<Candidate> recipes;
 			std::vector<Candidate> craftableItems;
 
-			// Only the handful of types the curated functions need - a
+			// Only the handful of types the curated functions need. A
 			// bucket for every type would duplicate all 400k+ EditorIDs
 			// for no benefit.
 			std::unordered_map<RE::FormType, std::vector<Candidate>> byType;
@@ -76,6 +76,15 @@ namespace RPP
 			// would duplicate every EditorID string in memory for no
 			// current benefit.
 			std::unordered_map<const RE::TESForm*, std::string> recipeEditorIDs;
+
+			// Reverse lookup covering EVERY form in the EditorID table,
+			// unlike recipeEditorIDs above. The classifier predicates
+			// (Classifiers.cpp) need this for arbitrary produced items
+			// (ARMO/WEAP/AMMO/MISC/...), not just recipes. Yes, this does
+			// duplicate every EditorID string a second time; unavoidable
+			// once more than one record type needs reverse lookup, and
+			// still bounded by the size of the game's own EditorID table.
+			std::unordered_map<const RE::TESForm*, std::string> allEditorIDsByForm;
 		};
 
 		const Caches& GetCaches()
@@ -93,6 +102,7 @@ namespace RPP
 						}
 
 						std::string id{ editorID.c_str() };
+						c.allEditorIDsByForm.emplace(form, id);
 						Candidate candidate{ id, MakeDetail(form) };
 						c.all.push_back(candidate);
 
@@ -104,6 +114,7 @@ namespace RPP
 						case RE::FormType::Faction:
 						case RE::FormType::Global:
 						case RE::FormType::Race:
+						case RE::FormType::Keyword:
 							c.byType[formType].push_back(candidate);
 							break;
 						default:
@@ -116,7 +127,7 @@ namespace RPP
 							c.recipeEditorIDs.emplace(form, std::move(id));
 							break;
 						// The record types that actually make sense as a
-						// GetItemCount target - see AllCraftableItemEditorIDs.
+						// GetItemCount target. See AllCraftableItemEditorIDs.
 						case RE::FormType::Misc:
 						case RE::FormType::Armor:
 						case RE::FormType::Weapon:
@@ -180,6 +191,16 @@ namespace RPP
 		}
 		const auto& byForm = GetCaches().recipeEditorIDs;
 		const auto it = byForm.find(a_recipe);
+		return it != byForm.end() ? std::string_view{ it->second } : std::string_view{};
+	}
+
+	std::string_view LookupEditorID(const RE::TESForm* a_form)
+	{
+		if (!a_form) {
+			return {};
+		}
+		const auto& byForm = GetCaches().allEditorIDsByForm;
+		const auto it = byForm.find(a_form);
 		return it != byForm.end() ? std::string_view{ it->second } : std::string_view{};
 	}
 }

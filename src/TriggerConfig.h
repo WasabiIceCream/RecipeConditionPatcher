@@ -8,11 +8,11 @@ namespace RPP
 	// One row: "if a recipe requires this material, add this condition to
 	// it." materialID identifies a form using EITHER a Creation Kit
 	// EditorID (e.g. "IngotEbony") or a "FormID~PluginName" pair (e.g.
-	// "0x5AD99~Skyrim.esm") - see ResolveIdentifier() in Identifiers.h for
+	// "0x5AD99~Skyrim.esm"). See ResolveIdentifier() in Identifiers.h for
 	// the format detection logic.
 	//
 	// A single material can appear in multiple TriggerEntry rows (e.g. to
-	// add more than one condition for the same material) - each row adds
+	// add more than one condition for the same material); each row adds
 	// its own condition independently.
 	struct TriggerEntry
 	{
@@ -28,11 +28,11 @@ namespace RPP
 	std::vector<TriggerEntry> LoadTriggerEntries();
 
 	// Same as above, but works from already-parsed config(s) instead of
-	// reading files itself - use this when a caller (like
+	// reading files itself. Use this when a caller (like
 	// RecipePatcher.cpp) also needs LoadRecipeOverrides() in the same
 	// pass, so the shared config file is only read/parsed once instead of
 	// once per loader. a_externalConfigs are additional mod-author config
-	// files (see ConfigFile::ReadExternalConfigs) - only their "mappings"
+	// files (see ConfigFile::ReadExternalConfigs); only their "mappings"
 	// arrays are used. Passing just a_mainConfig (leaving
 	// a_externalConfigs at its default) reads only the main config's own
 	// mappings, which is what the in-game editor tab uses, since it only
@@ -42,7 +42,7 @@ namespace RPP
 		const std::vector<ConfigFile::ExternalConfig>& a_externalConfigs = {});
 
 	// Overwrites the "mappings" array in a_path with the given list
-	// (read-modify-write - every other top-level key, and any "//" comment
+	// (read-modify-write: every other top-level key, and any "//" comment
 	// keys, are left untouched). a_path may be the main config or any
 	// external *_RCP.json; the in-game editor can target either.
 	void SaveUserTriggerEntries(const std::vector<TriggerEntry>& a_entries, const std::string& a_path);

@@ -2,7 +2,7 @@
 
 namespace RPP
 {
-	// Which "object" slot a condition is evaluated against - i.e. whose
+	// Which "object" slot a condition is evaluated against, i.e. whose
 	// state HasPerk/GetActorValue/etc. checks. Names match the real
 	// RE::CONDITIONITEMOBJECT enum (verified directly against
 	// TESCondition.h) minus their "k" prefix, except kSelf which is
@@ -21,7 +21,7 @@ namespace RPP
 		constexpr int kCommandTarget = 8;
 	}
 
-	// A single, fully generic CTDA condition - deliberately mirrors the
+	// A single, fully generic CTDA condition. Deliberately mirrors the
 	// game's own condition format almost 1:1, rather than modeling only
 	// HasPerk. See RecommendedConditionFunctions.h for the confirmed
 	// function list and the README for the full picture:
@@ -38,8 +38,8 @@ namespace RPP
 	struct ConditionSpec
 	{
 		// Function name (resolved against ConditionFunctionTable.h) OR a
-		// raw numeric ID as a string (e.g. "448") for anything not in -
-		// or not worth looking up in - that table.
+		// raw numeric ID as a string (e.g. "448") for anything not in (or
+		// not worth looking up in) that table.
 		std::string function;
 
 		// Each is EITHER an identifier (EditorID or FormID~Plugin,
@@ -47,7 +47,7 @@ namespace RPP
 		// this plugin) OR a plain number, OR empty if this function
 		// doesn't use that parameter slot. Numbers are stored as a raw
 		// 32-bit integer in the parameter slot. GetActorValue's param1 is
-		// a special case with its own resolution path - see
+		// a special case with its own resolution path. See
 		// ActorValueTable.h and ResolveActorValueParam in Conditions.cpp.
 		std::string param1;
 		std::string param2;
@@ -61,7 +61,7 @@ namespace RPP
 		// against dynamically instead of a fixed literal.
 		std::string value = "1";
 
-		// See RunOn:: above. Defaults to Subject - the in-game editor
+		// See RunOn:: above. Defaults to Subject; the in-game editor
 		// always uses this default and doesn't expose a control to change
 		// it, since crafting is always done by the player and every other
 		// option has no sensible meaning here. Still hand-editable in the

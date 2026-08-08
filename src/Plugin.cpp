@@ -68,7 +68,7 @@ SKSEPluginVersion = []() noexcept {
 	// UsesUpdatedStructs() (which together mean this plugin resolves
 	// everything through Address Library rather than hardcoded per-version
 	// offsets), tells SKSE this plugin doesn't care which exact version is
-	// running - the standard approach for staying compatible with future
+	// running, the standard approach for staying compatible with future
 	// game updates without reissuing builds.
 	return v;
 }();

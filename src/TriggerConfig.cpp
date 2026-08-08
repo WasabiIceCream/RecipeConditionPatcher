@@ -8,7 +8,7 @@ namespace RPP
 	{
 		// Parses a raw "mappings" json array into entries, warning on and
 		// skipping malformed rows. a_sourcePath is only used for those
-		// warnings - it must be the file the array actually came from
+		// warnings. It must be the file the array actually came from
 		// (the main config, or a specific external *_RCP.json), or a
 		// malformed third-party entry would send someone digging through
 		// the wrong file.
@@ -32,8 +32,13 @@ namespace RPP
 				e.condition.runOn = entry.value("runOn", 0);
 				e.condition.logic = entry.value("logic", std::string{ "AND" });
 
-				if (e.materialID.empty() || e.condition.param1.empty()) {
-					SKSE::log::warn("skipping malformed mapping entry in {} (need \"material\" and \"param1\"/\"perk\")", a_sourcePath);
+				// Only "material" is actually required. param1 legitimately
+				// stays empty for a param-less function (GetCurrentTime,
+				// GetLevel, GetRandomPercent; see the README's Condition
+				// functions table). Used to also require param1 non-empty,
+				// which silently rejected those.
+				if (e.materialID.empty()) {
+					SKSE::log::warn("skipping malformed mapping entry in {} (need \"material\")", a_sourcePath);
 					continue;
 				}
 

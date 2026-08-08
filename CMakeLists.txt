@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 # ---------------------------------------------------------------------------
-# fxc2 (patched Mozilla fxc2, MPL 2.0) - HLSL shader compiler stand-in,
+# fxc2 (patched Mozilla fxc2, MPL 2.0): HLSL shader compiler stand-in,
 # Linux-host builds only.
 #
 # CommonLibSSE-NG (below) pulls in DirectXTK unconditionally, and
@@ -26,7 +26,7 @@ if(CMAKE_HOST_UNIX)
 			message(FATAL_ERROR
 				"Building against CommonLibSSE-NG on Linux needs a mingw-w64 "
 				"clang++ to compile extern/fxc2/fxc2.cpp (a stand-in fxc.exe "
-				"run under Wine - DirectXTK's own build needs a real HLSL "
+				"run under Wine, since DirectXTK's own build needs a real HLSL "
 				"shader compiler, which a plain clang-cl/xwin cross-compile "
 				"has no equivalent for). Install llvm-mingw (e.g. 'sudo "
 				"pacman -S llvm-mingw' on Arch) and reconfigure.")
@@ -46,7 +46,7 @@ endif()
 # ---------------------------------------------------------------------------
 # Project
 # ---------------------------------------------------------------------------
-project(RecipeConditionPatcher VERSION 2.0.0 LANGUAGES CXX)
+project(RecipeConditionPatcher VERSION 2.1.0 LANGUAGES CXX)
 
 option(ENABLE_SKYRIM_SE "Build against the Skyrim SE runtime" ON)
 option(ENABLE_SKYRIM_AE "Build against the Skyrim AE runtime" ON)
@@ -57,12 +57,12 @@ option(ENABLE_SKYRIM_VR "Build against the Skyrim VR runtime" ON)
 #
 # Generates src/Version.h.in -> <build dir>/generated/Version.h, exposing
 # the VERSION number from project() above as RPP_VERSION_MAJOR/MINOR/PATCH
-# macros - see Plugin.cpp's PluginVersionData() call. This means the
+# macros. See Plugin.cpp's PluginVersionData() call. This means the
 # version only needs to be set in ONE place (the project() call above);
 # bumping it there updates the compiled plugin's version automatically,
 # no need to also edit Plugin.cpp by hand.
 #
-# NOTE: this does NOT reach vcpkg.json's own "version-string" field -
+# NOTE: this does NOT reach vcpkg.json's own "version-string" field.
 # vcpkg parses that file directly, independent of CMake, so there's no way
 # for a CMake variable to flow into it. That field is really just vcpkg's
 # own package-manifest bookkeeping (not something anything reads back out
@@ -90,13 +90,13 @@ configure_file(
 # this project can't carry, so a submodule-based setup silently does
 # nothing on a fresh extraction instead of fetching anything. A plain
 # clone-if-missing step has no such gap. --recurse-submodules IS needed
-# on the clone itself though, since NG vendors OpenVR - extern/openvr -
+# on the clone itself though, since NG vendors OpenVR (extern/openvr)
 # as a real git submodule internally.)
 # ---------------------------------------------------------------------------
 set(COMMONLIBSSE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extern/CommonLibSSE")
 if(NOT EXISTS "${COMMONLIBSSE_DIR}/CMakeLists.txt")
 	find_package(Git REQUIRED)
-	message(STATUS "extern/CommonLibSSE not found - cloning alandtse/CommonLibSSE-NG (ng branch)...")
+	message(STATUS "extern/CommonLibSSE not found, cloning alandtse/CommonLibSSE-NG (ng branch)...")
 	execute_process(
 		COMMAND "${GIT_EXECUTABLE}" clone --branch ng --depth 1 --recurse-submodules --shallow-submodules
 			https://github.com/alandtse/CommonLibSSE-NG "${COMMONLIBSSE_DIR}"
@@ -119,28 +119,28 @@ add_subdirectory("${COMMONLIBSSE_DIR}" CommonLibSSE)
 # ---------------------------------------------------------------------------
 # Output filename / load-order note
 #
-# SKSE has no first-class "load after X" dependency API for native plugins -
-# confirmed by inspecting SKSE::PluginVersionData directly: it has version-
+# SKSE has no first-class "load after X" dependency API for native plugins.
+# Confirmed by inspecting SKSE::PluginVersionData directly: it has version-
 # independence flags and a compatible-versions list, but no dependency/
 # ordering field of any kind. In practice, the order plugins load in (and
 # therefore the order their kDataLoaded handlers run in, since listeners
 # fire in registration order) is governed by alphabetical DLL filename
-# within Data/SKSE/Plugins - the same mechanism SkyPatcher's own
+# within Data/SKSE/Plugins, the same mechanism SkyPatcher's own
 # documentation describes for its own internal load-order tie-breaking.
 #
 # This matters because SkyPatcher's COBJ patcher can add/remove/change a
-# recipe's required materials (though not its conditions) - exactly what
+# recipe's required materials (though not its conditions), exactly what
 # ApplyPerkRequirementsToAllRecipes() scans to decide which conditions to
 # add. If we ran before SkyPatcher, we'd see the pre-patch material list
 # and potentially miss or misjudge recipes SkyPatcher was about to change.
 #
 # "RecipeConditionPatcher.dll" alphabetically precedes "SkyPatcher.dll"
-# (R < S), so by default we'd load - and run - BEFORE it: the wrong order. The
+# (R < S), so by default we'd load (and run) BEFORE it: the wrong order. The
 # prefix below nudges the actual compiled filename late enough to run
 # after SkyPatcher and, generally, after any other COBJ-editing patcher
 # whose name doesn't also start this late in the alphabet. This is a
 # filename convention, not a real dependency guarantee (there isn't one to
-# have) - override with -DOUTPUT_FILENAME_PREFIX="" to disable, or set it
+# have). Override with -DOUTPUT_FILENAME_PREFIX="" to disable, or set it
 # to something else if you need different ordering.
 # ---------------------------------------------------------------------------
 set(OUTPUT_FILENAME_PREFIX "zz_" CACHE STRING
@@ -172,13 +172,25 @@ set(SOURCES
 	src/TriggerConfig.cpp
 	src/RecipeOverrides.h
 	src/RecipeOverrides.cpp
+	src/Classifiers.h
+	src/Classifiers.cpp
+	src/ClassifierPredicateEditor.h
+	src/ClassifierPredicateEditor.cpp
+	src/ClassifierGroupEditor.h
+	src/ClassifierGroupEditor.cpp
 	src/Settings.h
 	src/Settings.cpp
 	src/UI.h
 	src/UIStyle.h
 	src/UI.cpp
+	src/UIAutocomplete.h
+	src/UIAutocomplete.cpp
+	src/UIConditionFields.h
+	src/UIConditionFields.cpp
 	src/UIMappingsEditor.h
 	src/UIMappingsEditor.cpp
+	src/UIClassifiersEditor.h
+	src/UIClassifiersEditor.cpp
 	src/RecipePatcher.h
 	src/RecipePatcher.cpp
 	extern/SKSEMenuFramework.h
@@ -205,7 +217,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Output as a .dll with no "lib" prefix, matching SKSE plugin conventions.
-# See the OUTPUT_FILENAME_PREFIX note above the vcpkg find_package() calls -
+# See the OUTPUT_FILENAME_PREFIX note above the vcpkg find_package() calls;
 # the internal plugin name (shown in logs) stays "RecipeConditionPatcher"
 # regardless; only the file on disk gets the load-order prefix.
 set_target_properties(${PROJECT_NAME} PROPERTIES
