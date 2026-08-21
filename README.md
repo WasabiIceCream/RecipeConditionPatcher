@@ -1,6 +1,6 @@
 # RecipeConditionPatcher
 
-[![License: MIT](https://img.shields.io/github/license/WasabiIceCream/RecipeConditionPatcher)](LICENSE)
+[![License: GPL-3.0-or-later](https://img.shields.io/github/license/WasabiIceCream/RecipeConditionPatcher)](LICENSE)
 
 Automatically patches every crafting recipe (Constructible Object record)
 in your game with whatever conditions you want. The optional default
@@ -723,7 +723,17 @@ to something else if you need different ordering.
 
 ## License
 
-MIT, see [LICENSE](LICENSE). `extern/fxc2/` is vendored and modified from
+GPL-3.0-or-later, see [LICENSE](LICENSE). This project was MIT-licensed
+through 2.1.0; it moved to GPL-3.0-or-later because it statically links
+[CommonLibSSE-NG](https://github.com/alandtse/CommonLibSSE-NG), which
+itself moved from MIT to GPL-3.0-or-later. CommonLibSSE-NG's own license
+exceptions cover its own linking against Skyrim, SKSE, and Windows; they
+don't extend to plugin code built on top of it, so a statically-linked
+plugin like this one is a combined work and must be GPL-3.0-or-later (or
+another GPL-3.0-compatible license) itself. Releases before this change
+remain available under their original MIT terms.
+
+`extern/fxc2/` is vendored and modified from
 [mozilla/fxc2](https://github.com/mozilla/fxc2) and is licensed separately
 under the Mozilla Public License 2.0; see `extern/fxc2/LICENSE` for its
 terms. `extern/fxc2/d3dcompiler_47.dll` is Microsoft's own redistributable
