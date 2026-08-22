@@ -723,15 +723,20 @@ to something else if you need different ordering.
 
 ## License
 
-GPL-3.0-or-later, see [LICENSE](LICENSE). This project was MIT-licensed
-through 2.1.0; it moved to GPL-3.0-or-later because it statically links
-[CommonLibSSE-NG](https://github.com/alandtse/CommonLibSSE-NG), which
-itself moved from MIT to GPL-3.0-or-later. CommonLibSSE-NG's own license
-exceptions cover its own linking against Skyrim, SKSE, and Windows; they
-don't extend to plugin code built on top of it, so a statically-linked
+GPL-3.0-or-later, see [LICENSE](LICENSE). This project statically links
+[CommonLibSSE-NG](https://github.com/alandtse/CommonLibSSE-NG), which has
+been GPL-3.0-or-later since 2026-07-25 (its v5.0.0). CommonLibSSE-NG's own
+license exceptions cover its linking against Skyrim, SKSE, and Windows;
+they don't extend to plugin code built on top of it, so a statically-linked
 plugin like this one is a combined work and must be GPL-3.0-or-later (or
-another GPL-3.0-compatible license) itself. Releases before this change
-remain available under their original MIT terms.
+another GPL-3.0-compatible license) itself.
+
+Earlier releases were labeled MIT, which was a mistake on my part rather
+than a different set of terms: 2.1.0 (2026-08-08) already built against a
+GPL-licensed CommonLibSSE-NG, so those binaries were covered by GPL terms
+too. The MIT grant on my own source code still stands for anyone who took
+it under those terms. Source has always been, and remains, available
+here.
 
 `extern/fxc2/` is vendored and modified from
 [mozilla/fxc2](https://github.com/mozilla/fxc2) and is licensed separately
