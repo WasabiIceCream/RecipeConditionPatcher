@@ -2,6 +2,7 @@
 
 #include "ActorValueTable.h"
 #include "ConditionFunctionTable.h"
+#include "EditorIDCache.h"
 #include "Identifiers.h"
 
 namespace RPP
@@ -209,13 +210,19 @@ namespace RPP
 			const bool param1Ok = isActorValueFunction ?
 			                           ResolveActorValueParam(a_spec.param1, a_outP1) :
 			                           ResolveParam(a_spec.param1, a_outP1);
+			// When the EditorID table is unavailable nothing can resolve by
+			// name, so say that instead of leaving a bare "could not
+			// resolve" that reads like the ID itself is wrong.
+			const std::string unresolvedCause = EditorIDTableMissingRecords() ?
+			                                        " (EditorID table unavailable, see the warning above)" :
+			                                        "";
 			if (!param1Ok) {
 				a_failureReason = "could not resolve param1 '" + a_spec.param1 + "'" +
-				                   (isActorValueFunction ? " (expected a number 0-163 or an Actor Value name like \"Smithing\")" : "");
+				                   (isActorValueFunction ? " (expected a number 0-163 or an Actor Value name like \"Smithing\")" : unresolvedCause);
 				return false;
 			}
 			if (!ResolveParam(a_spec.param2, a_outP2)) {
-				a_failureReason = "could not resolve param2 '" + a_spec.param2 + "'";
+				a_failureReason = "could not resolve param2 '" + a_spec.param2 + "'" + unresolvedCause;
 				return false;
 			}
 

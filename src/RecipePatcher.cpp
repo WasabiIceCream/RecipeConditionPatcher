@@ -116,15 +116,45 @@ namespace RPP
 		{
 			std::unordered_map<RE::TESBoundObject*, std::vector<ConditionSpec>> resolved;
 
+			// With the EditorID table unavailable EVERY identifier fails for
+			// the one same reason, so the per-identifier lines stop being
+			// individually actionable and just repeat one message N times.
+			// In that case the names are collected and listed on a single
+			// line instead. When the table IS available a failure means that
+			// specific ID is wrong or its mod isn't installed, which is worth
+			// its own line each.
+			const bool tableMissing = EditorIDTableMissingRecords();
+			std::vector<std::string_view> unresolvedMaterials;
+
 			std::size_t resolvedCount = 0;
 			for (const auto& entry : a_entries) {
 				auto* material = ResolveIdentifier<RE::TESBoundObject>(entry.materialID);
 				if (!material) {
-					SKSE::log::warn("could not resolve material '{}' (mod not installed, or ID is wrong)", entry.materialID);
+					if (tableMissing) {
+						// More than one row can name the same material, and
+						// listing it twice tells the reader nothing.
+						if (std::find(unresolvedMaterials.begin(), unresolvedMaterials.end(), entry.materialID) == unresolvedMaterials.end()) {
+							unresolvedMaterials.push_back(entry.materialID);
+						}
+					} else {
+						SKSE::log::warn("could not resolve material '{}' (mod not installed, or ID is wrong)", entry.materialID);
+					}
 					continue;
 				}
 				resolved[material].push_back(entry.condition);
 				++resolvedCount;
+			}
+
+			if (!unresolvedMaterials.empty()) {
+				std::string names;
+				for (const auto& name : unresolvedMaterials) {
+					if (!names.empty()) {
+						names += ", ";
+					}
+					names += name;
+				}
+				SKSE::log::warn("could not resolve any of {} material(s) by EditorID (table unavailable, see the warning above): {}",
+					unresolvedMaterials.size(), names);
 			}
 
 			SKSE::log::info("resolved {}/{} trigger rows", resolvedCount, a_entries.size());
@@ -171,7 +201,9 @@ namespace RPP
 			for (const auto& o : a_overrides) {
 				auto* recipe = ResolveIdentifier<RE::BGSConstructibleObject>(o.recipeID);
 				if (!recipe) {
-					SKSE::log::warn("recipeOverrides: could not resolve recipe '{}' (mod not installed, or ID is wrong)", o.recipeID);
+					SKSE::log::warn("recipeOverrides: could not resolve recipe '{}' ({})", o.recipeID,
+						EditorIDTableMissingRecords() ? "EditorID table unavailable, see the warning above" :
+						                                 "mod not installed, or ID is wrong");
 					continue;
 				}
 
@@ -321,6 +353,39 @@ namespace RPP
 		std::size_t conditionsAddedFromClassifiers = 0;
 		std::size_t conditionResolutionFailures = 0;
 
+		// One unresolvable identifier fails once per recipe that
+		// references it, and when the EditorID table is unavailable
+		// EVERY identifier fails on EVERY recipe, so warning at the point
+		// of failure meant hundreds of byte-identical lines burying the
+		// rest of the log. Collect failures by their exact message
+		// instead and emit one line per distinct message after the pass.
+		// Kept as a vector (rather than a map) so the summary comes out
+		// in first-occurrence order, and because the number of DISTINCT
+		// messages is tiny even when the occurrence count is huge.
+		struct ConditionFailure
+		{
+			std::string message;      // "<source>: <reason>", the part that repeats
+			std::string firstRecipe;  // description of the first recipe it happened on
+			std::size_t count = 0;
+		};
+		std::vector<ConditionFailure> conditionFailures;
+
+		// a_recipeDesc is taken as a callable, not a string, so the
+		// (allocating) recipe description is only built for the FIRST
+		// occurrence of each distinct message.
+		const auto NoteConditionFailure = [&](std::string_view a_source, const std::string& a_reason, auto&& a_recipeDesc) {
+			++conditionResolutionFailures;
+
+			auto message = fmt::format("{}: {}", a_source, a_reason);
+			const auto it = std::find_if(conditionFailures.begin(), conditionFailures.end(),
+				[&](const ConditionFailure& a_failure) { return a_failure.message == message; });
+			if (it != conditionFailures.end()) {
+				++it->count;
+				return;
+			}
+			conditionFailures.push_back({ std::move(message), a_recipeDesc(), 1 });
+		};
+
 		for (auto* cobj : recipes) {
 			if (!cobj) {
 				continue;
@@ -416,8 +481,7 @@ namespace RPP
 						bool alreadyPresent = false;
 						std::string failReason;
 						if (!AddConditionIfMissing(cobj->conditions, spec, alreadyPresent, failReason)) {
-							++conditionResolutionFailures;
-							SKSE::log::warn("[{}] skipping condition for material trigger: {}", RecipeDesc(), failReason);
+							NoteConditionFailure("skipping condition for material trigger", failReason, RecipeDesc);
 						} else if (!alreadyPresent) {
 							patchedThisRecipe = true;
 							++conditionsAdded;
@@ -456,8 +520,7 @@ namespace RPP
 							bool alreadyPresent = false;
 							std::string failReason;
 							if (!AddConditionIfMissing(cobj->conditions, spec, alreadyPresent, failReason)) {
-								++conditionResolutionFailures;
-								SKSE::log::warn("[{}] skipping classifier condition: {}", RecipeDesc(), failReason);
+								NoteConditionFailure("skipping classifier condition", failReason, RecipeDesc);
 							} else if (!alreadyPresent) {
 								patchedThisRecipe = true;
 								++conditionsAddedFromClassifiers;
@@ -484,8 +547,7 @@ namespace RPP
 					bool alreadyPresent = false;
 					std::string failReason;
 					if (!AddConditionIfMissing(cobj->conditions, spec, alreadyPresent, failReason)) {
-						++conditionResolutionFailures;
-						SKSE::log::warn("[{}] skipping recipeOverrides condition: {}", RecipeDesc(), failReason);
+						NoteConditionFailure("skipping recipeOverrides condition", failReason, RecipeDesc);
 					} else if (!alreadyPresent) {
 						patchedThisRecipe = true;
 						++conditionsAddedFromOverrides;
@@ -498,6 +560,15 @@ namespace RPP
 
 			if (patchedThisRecipe) {
 				++recipesPatched;
+			}
+		}
+
+		for (const auto& failure : conditionFailures) {
+			if (failure.count == 1) {
+				SKSE::log::warn("[{}] {}", failure.firstRecipe, failure.message);
+			} else {
+				SKSE::log::warn("{} (x{}, first: [{}])",
+					failure.message, failure.count, failure.firstRecipe);
 			}
 		}
 

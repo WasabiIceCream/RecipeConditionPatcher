@@ -3,4 +3,3 @@ out/
 .vs/
 CMakeUserPresets.json
 extern/CommonLibSSE/
-extern/fxc2/fxc2.exe

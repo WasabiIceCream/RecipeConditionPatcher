@@ -15,6 +15,13 @@ other things Skyrim can check).
 - [Skyrim Script Extender (SKSE64)](https://www.nexusmods.com/skyrimspecialedition/mods/30379) (or SKSE VR for the VR version)
 - [Address Library for SKSE Plugins](https://www.nexusmods.com/skyrimspecialedition/mods/32444)
   (the SE/AE version, or the VR Address Library if you're on Skyrim VR)
+- [powerofthree's Tweaks](https://www.nexusmods.com/skyrimspecialedition/mods/51073).
+  Everything in a config file is written as an EditorID (`IngotSteel`,
+  `SteelSmithing`, ...), and Skyrim doesn't keep EditorIDs in memory for
+  the record types involved. po3's Tweaks restores them via its
+  `editorID cache` feature. Without it nothing resolves and this plugin
+  patches nothing at all, so it's a hard requirement rather than a
+  nice-to-have. The log says so plainly if it's missing.
 - *Optional:* [SKSE Menu Framework](https://www.nexusmods.com/skyrimspecialedition/mods/120352),
   for creating and editing config files with the in-game settings menu (described below).
 
@@ -592,35 +599,33 @@ MSVC-compiled classes and will build a plugin that crashes instantly.
 clang-cl/lld-link genuinely target the MSVC ABI, which is what makes this
 work at all.
 
+The toolchain, the vcpkg overlay triplet, and the DirectXTK overlay port
+that makes this work all live in CommonLibSSE-NG itself, under
+`extern/CommonLibSSE/examples/linux-cross-compile/`. Its README there is
+the authoritative setup guide; `CMakePresets.json`'s `linux-clangcl`
+preset just points vcpkg at those files.
+
 **One-time environment setup** (package manager commands below are for
-Arch/pacman; substitute your distro's equivalent for `clang`, `lld`,
-`llvm`, `cmake`, `ninja`, `rust`, and `git`)
+Arch/pacman; substitute your distro's equivalent)
 
 ```bash
-# Toolchain
+# Toolchain. Clang 19+ is required: the MSVC STL headers reject anything
+# older with a static_assert.
 sudo pacman -S clang lld llvm cmake ninja rust git
 
-# Wine + llvm-mingw: CommonLibSSE-NG depends on DirectXTK, and DirectXTK's
-# own build compiles its shaders via a Windows batch script that needs a
-# real fxc.exe. There's no Linux-native HLSL compiler that produces the
-# same classic DXBC bytecode, so this project vendors a patched build of
-# Mozilla's fxc2 (extern/fxc2/) that loads the real d3dcompiler_47.dll
-# directly and runs under Wine instead. llvm-mingw provides the
-# <getopt.h> header fxc2.cpp needs (not part of the MSVC/clang-cl
-# sysroot); CMake builds fxc2.exe from it automatically on first
-# configure. None of this applies on a native Windows build (Option A
-# above), which already has a real fxc.exe via the Windows SDK.
+# Wine + llvm-mingw. DirectXTK compiles its shaders with a Windows batch
+# script that needs a real fxc.exe, which has no Linux-native equivalent.
+# The overlay port fetches and builds a patched fxc2
+# (https://github.com/WasabiIceCream/fxc2, MPL-2.0) and runs it under Wine;
+# llvm-mingw supplies the compiler that builds it.
 sudo pacman -S wine llvm-mingw
 
-# xwin: if the current release needs a newer Rust edition than your
-# distro's rustc provides, pin an older version:
-cargo install xwin --version 0.6.5 --locked
-echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+# xwin
+cargo install xwin --locked
 export PATH="$HOME/.cargo/bin:$PATH"
 
 # Download the Windows SDK + MSVC CRT. Both flags below are REQUIRED:
 #   --use-winsysroot-style: without it, /winsysroot can't find anything
-#     (xwin's default output layout doesn't match what it expects)
 #   --preserve-ms-arch-notation: without it, folders are named "x86_64"
 #     instead of "x64", which lld-link's auto-search won't find either
 mkdir -p ~/xwin-cache ~/xwin-out
@@ -630,20 +635,14 @@ xwin --accept-license --cache-dir ~/xwin-cache splat \
 
 # vcpkg
 git clone https://github.com/microsoft/vcpkg $HOME/.local/share/vcpkg
-echo 'export VCPKG_ROOT="$HOME/.local/share/vcpkg"' >> ~/.bashrc
 export VCPKG_ROOT="$HOME/.local/share/vcpkg"
-
-# Fix a gap in xwin's generated case-variant symlinks: CommonLibSSE-NG's own
-# build links a few system libs (Advapi32.lib, Dbghelp.lib, Ole32.lib,
-# Version.lib) with a specific casing xwin doesn't generate by default.
-# Only needed if the link step complains about one of these four with
-# "No such file or directory".
-XWIN_SYSROOT=~/xwin-out ./scripts/fix-xwin-lib-casing.sh
 ```
 
-If your `~/xwin-out` path or SDK version differs, edit
-`cmake/toolchain-clangcl-windows.cmake` (the `XWIN_SYSROOT` line) and
-`scripts/fix-xwin-lib-casing.sh` to match.
+The sysroot defaults to `~/xwin-out`. Point elsewhere with the
+`XWIN_SYSROOT` environment variable or `-DXWIN_SYSROOT=<path>` at
+configure time. If llvm-mingw isn't on `PATH`, set `LLVM_MINGW_BIN` to its
+`bin/` directory instead of adding it to `PATH`, which would shadow the
+real toolchain's `clang-cl`/`lld-link`.
 
 **Build**
 
@@ -656,8 +655,9 @@ cmake --build --preset linux-clangcl-release
 No `git init`/submodule step needed even if you got this project as a zip
 rather than `git clone`-ing it. CommonLibSSE-NG (including its own OpenVR
 submodule) is cloned into `extern/CommonLibSSE` automatically by the first
-`cmake --preset` call if it isn't already there, and `extern/fxc2/fxc2.exe`
-gets built the same way (see `CMakeLists.txt`).
+`cmake --preset` call if it isn't already there, and the fxc2 shader
+compiler is fetched and built by the overlay port during the same
+configure.
 
 The compiled DLL will be at `build/linux-clangcl/zz_RecipeConditionPatcher.dll`
 (see "Load order" below for why the filename has that prefix). Sanity-check
@@ -738,8 +738,7 @@ too. The MIT grant on my own source code still stands for anyone who took
 it under those terms. Source has always been, and remains, available
 here.
 
-`extern/fxc2/` is vendored and modified from
-[mozilla/fxc2](https://github.com/mozilla/fxc2) and is licensed separately
-under the Mozilla Public License 2.0; see `extern/fxc2/LICENSE` for its
-terms. `extern/fxc2/d3dcompiler_47.dll` is Microsoft's own redistributable
-binary, not covered by either license above.
+The fxc2 shader compiler the Linux cross-compile path uses is fetched at
+build time from [WasabiIceCream/fxc2](https://github.com/WasabiIceCream/fxc2)
+and is licensed separately under the Mozilla Public License 2.0. It is a
+build-time tool only; nothing from it ends up in the compiled plugin.

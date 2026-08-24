@@ -25,9 +25,9 @@
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_MAKE_PROGRAM": "/usr/bin/ninja",
         "VCPKG_TARGET_TRIPLET": "x64-windows-clangcl",
-        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/custom-triplets",
-        "VCPKG_OVERLAY_PORTS": "${sourceDir}/custom-ports",
-        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-clangcl-windows.cmake"
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/extern/CommonLibSSE/examples/linux-cross-compile/custom-triplets",
+        "VCPKG_OVERLAY_PORTS": "${sourceDir}/extern/CommonLibSSE/examples/linux-cross-compile/custom-ports",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/extern/CommonLibSSE/cmake/toolchain-linux-clangcl.cmake"
       }
     }
   ],

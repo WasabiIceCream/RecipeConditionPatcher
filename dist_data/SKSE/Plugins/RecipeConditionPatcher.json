@@ -1,15 +1,10 @@
 {
-  "//": "Full documentation of this file's format is in the README. The default material->perk mappings ship separately in MatsNeedPerks_RCP.json (see the README's 'Adding your own config as a separate mod' section); this file only holds settings and an example recipeOverrides entry.",
+  "//": "Full documentation of this file's format is in the README. The default material->perk mappings ship separately in MatsNeedPerks_RCP.json (see the README's 'Adding your own config as a separate mod' section); this file only holds settings.",
 
   "enabled": true,
   "existingPerkMode": 0,
   "logLevel": 0,
 
-  "recipeOverrides": [
-    {
-      "recipe": "SomeExampleRecipeEditorID",
-      "exclude": true,
-      "comment": "This entry is just an example. 'exclude' being true for this recipe will prevent RCP from making any changes, unless another config overrides it again"
-    }
-  ]
+  "//recipeOverrides": "Per-recipe overrides go here, keyed by the recipe's EditorID. Setting \"exclude\": true prevents RCP from making any changes to that recipe, unless another config overrides it again. Example row: { \"recipe\": \"TemperWeaponSteelSword\", \"exclude\": true, \"comment\": \"why you did this\" }. Left empty by default; a row naming a recipe you don't have installed logs a warning on every load.",
+  "recipeOverrides": []
 }

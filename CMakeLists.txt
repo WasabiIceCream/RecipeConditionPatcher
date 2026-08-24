@@ -1,49 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
 # ---------------------------------------------------------------------------
-# fxc2 (patched Mozilla fxc2, MPL 2.0): HLSL shader compiler stand-in,
-# Linux-host builds only.
-#
-# CommonLibSSE-NG (below) pulls in DirectXTK unconditionally, and
-# DirectXTK's own build compiles its shaders via Src/Shaders/CompileShaders.cmd,
-# which needs a real fxc.exe. On a native Windows build that's already on
-# the machine via the Windows SDK/Visual Studio, so this whole block is
-# skipped there. Gated on CMAKE_HOST_UNIX (reliable this early) rather than
-# CMAKE_CROSSCOMPILING (not set until project() runs, and this has to
-# finish before project() triggers vcpkg's manifest install, which is what
-# actually builds DirectXTK). See extern/fxc2/fxc2.cpp's header comment and
-# custom-ports/directxtk/ for the rest of how this gets used.
-# ---------------------------------------------------------------------------
-if(CMAKE_HOST_UNIX)
-	set(FXC2_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extern/fxc2")
-	set(FXC2_EXE "${FXC2_DIR}/fxc2.exe")
-	if(NOT EXISTS "${FXC2_EXE}")
-		find_program(MINGW_CLANGXX
-			NAMES x86_64-w64-mingw32-clang++
-			PATHS /opt/llvm-mingw/bin
-		)
-		if(NOT MINGW_CLANGXX)
-			message(FATAL_ERROR
-				"Building against CommonLibSSE-NG on Linux needs a mingw-w64 "
-				"clang++ to compile extern/fxc2/fxc2.cpp (a stand-in fxc.exe "
-				"run under Wine, since DirectXTK's own build needs a real HLSL "
-				"shader compiler, which a plain clang-cl/xwin cross-compile "
-				"has no equivalent for). Install llvm-mingw (e.g. 'sudo "
-				"pacman -S llvm-mingw' on Arch) and reconfigure.")
-		endif()
-		message(STATUS "Building extern/fxc2/fxc2.exe with ${MINGW_CLANGXX}...")
-		execute_process(
-			COMMAND "${MINGW_CLANGXX}" -static fxc2.cpp -o fxc2.exe
-			WORKING_DIRECTORY "${FXC2_DIR}"
-			RESULT_VARIABLE _fxc2_build_result
-		)
-		if(NOT _fxc2_build_result EQUAL 0)
-			message(FATAL_ERROR "Failed to build extern/fxc2/fxc2.exe (see output above).")
-		endif()
-	endif()
-endif()
-
-# ---------------------------------------------------------------------------
 # Project
 # ---------------------------------------------------------------------------
 project(RecipeConditionPatcher VERSION 2.1.0 LANGUAGES CXX)
@@ -80,9 +37,9 @@ configure_file(
 # CommonLibSSE-NG (alandtse fork, ng branch)
 #
 # Swapped from powerof3/CommonLibSSE to get single-binary SE+AE+VR support
-# (see ENABLE_SKYRIM_* above). See extern/fxc2/ and custom-ports/directxtk/
-# for the DirectXTK shader-compiler workaround this pulls in as a
-# consequence (NG depends on DirectXTK unconditionally).
+# (see ENABLE_SKYRIM_* above). On a Linux host its
+# examples/linux-cross-compile/ overlay port supplies the fxc2 stand-in
+# DirectXTK's shader build needs; CMakePresets.json points vcpkg at it.
 #
 # Fetched automatically into extern/CommonLibSSE if not already present.
 # (Deliberately not a git submodule for the OUTER checkout: submodule

@@ -155,6 +155,20 @@ namespace RPP
 
 				SKSE::log::info("EditorID caches built: {} total, {} recipes, {} craftable items",
 					c.all.size(), c.recipes.size(), c.craftableItems.size());
+
+				// Said once, here, rather than letting every failed lookup
+				// downstream imply the user's config is wrong. See
+				// EditorIDTableMissingRecords in the header for why the
+				// recipe count is the signal.
+				if (c.recipes.empty()) {
+					SKSE::log::warn(
+						"the game's EditorID table has no recipe records, so no material, recipe or perk "
+						"can be resolved by EditorID and this plugin will not patch anything this session");
+					SKSE::log::warn(
+						"this is what powerofthree's Tweaks provides (its \"editorID cache\" feature); "
+						"install/update it and it will work again. Any 'could not resolve' lines below "
+						"are caused by this, not by your config");
+				}
 				return c;
 			}();
 			return caches;
@@ -202,5 +216,10 @@ namespace RPP
 		const auto& byForm = GetCaches().allEditorIDsByForm;
 		const auto it = byForm.find(a_form);
 		return it != byForm.end() ? std::string_view{ it->second } : std::string_view{};
+	}
+
+	bool EditorIDTableMissingRecords()
+	{
+		return GetCaches().recipes.empty();
 	}
 }

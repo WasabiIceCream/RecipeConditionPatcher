@@ -59,4 +59,16 @@ namespace RPP
 	// EditorID, which can be an ARMO/WEAP/AMMO/MISC/etc. Backed by the
 	// same single cache-building pass as everything else in this file.
 	std::string_view LookupEditorID(const RE::TESForm* a_form);
+
+	// True when the game's EditorID table is missing the record types this
+	// plugin resolves against, which in practice means powerofthree's
+	// Tweaks (whose "editorID cache" feature populates them) isn't loaded.
+	// Every EditorID lookup for a material, recipe or perk will fail in
+	// that state, so callers use this to report the actual cause once
+	// instead of blaming each individual ID on a missing mod or a typo.
+	//
+	// Keyed on recipes specifically: Skyrim.esm alone defines hundreds of
+	// BGSConstructibleObject records, so a total of zero can only mean the
+	// table isn't carrying them, never a legitimately recipe-free setup.
+	bool EditorIDTableMissingRecords();
 }
