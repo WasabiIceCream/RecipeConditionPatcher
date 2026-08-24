@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.21)
 # ---------------------------------------------------------------------------
 # Project
 # ---------------------------------------------------------------------------
-project(RecipeConditionPatcher VERSION 2.1.0 LANGUAGES CXX)
+project(RecipeConditionPatcher VERSION 2.2.0 LANGUAGES CXX)
 
 option(ENABLE_SKYRIM_SE "Build against the Skyrim SE runtime" ON)
 option(ENABLE_SKYRIM_AE "Build against the Skyrim AE runtime" ON)
