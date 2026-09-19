@@ -353,6 +353,11 @@ more than one rule *within* the same group.
   crafting bench (the `BNAM` field on the recipe, e.g.
   `"CraftingSmithingForge"`, `"CraftingSmelter"`, `"CraftingTanningRack"`).
   A string or an array of strings (OR). Omit for "any bench."
+- **`benchExclude`.** `true` flips `benchKeyword` from a whitelist to a
+  blacklist: the group applies to every bench EXCEPT the listed ones,
+  instead of only to the listed ones. Defaults to `false`. Ignored (and
+  pointless) if `benchKeyword` is empty, since "any bench" is the same
+  either way.
 - **`when`.** A predicate ANDed onto every rule's own `match`, factoring out
   a guard shared by the whole group (e.g. "the produced item is ARMO and
   not jewelry") instead of repeating it in every rule. Checked once before

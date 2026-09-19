@@ -129,6 +129,7 @@ namespace RPP
 				if (groupJson.contains("benchKeyword")) {
 					group.benchKeywords = ToStringList(groupJson["benchKeyword"]);
 				}
+				group.benchExclude = groupJson.value("benchExclude", false);
 				if (groupJson.contains("when")) {
 					group.baseMatch = ParsePredicate(groupJson["when"], a_sourcePath);
 				}
@@ -360,8 +361,9 @@ namespace RPP
 		std::unordered_map<std::string, RE::TESForm*>& a_resolveCache)
 	{
 		if (!a_group.benchKeywords.empty()) {
-			const bool benchMatches = std::any_of(a_group.benchKeywords.begin(), a_group.benchKeywords.end(),
+			const bool benchInList = std::any_of(a_group.benchKeywords.begin(), a_group.benchKeywords.end(),
 				[&](const std::string& a_bk) { return a_bk == a_recipeBenchKeywordEditorID; });
+			const bool benchMatches = a_group.benchExclude ? !benchInList : benchInList;
 			if (!benchMatches) {
 				return nullptr;
 			}

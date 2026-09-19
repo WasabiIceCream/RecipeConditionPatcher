@@ -64,6 +64,11 @@ namespace RPP
 	struct ClassifierGroup
 	{
 		std::vector<std::string> benchKeywords;  // empty = any bench
+		// false (default): benchKeywords is a whitelist, only listed
+		// benches match. true: benchKeywords is a blacklist, every bench
+		// EXCEPT the listed ones matches. Meaningless (and ignored) when
+		// benchKeywords is empty, since "any bench" is the same either way.
+		bool benchExclude = false;
 		// ANDed onto every rule's own `match` below, factoring out a guard
 		// shared by every rule in the group (e.g. "the produced item is
 		// ARMO and not jewelry") instead of repeating it in each one.
@@ -101,7 +106,8 @@ namespace RPP
 		const std::vector<ConfigFile::ExternalConfig>& a_externalConfigs = {});
 
 	// Does a_group apply to a_recipe at all (its benchKeywords, if any,
-	// must include a_recipeBenchKeywordEditorID), and if so, which rule
+	// must include a_recipeBenchKeywordEditorID, or exclude it when
+	// benchExclude is set), and if so, which rule
 	// (first match wins) fires for a_producedItem? Returns the winning
 	// rule's `conditions`, or nullptr if the group doesn't apply to this
 	// bench or no rule matched. a_resolveCache memoizes identifier ->

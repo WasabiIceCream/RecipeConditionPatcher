@@ -136,6 +136,7 @@ namespace RPP::ClassifierEditor
 			if (groupJson.contains("benchKeyword")) {
 				group.benchKeywords = ToBufferList<64>(ToStringList(groupJson["benchKeyword"]));
 			}
+			group.benchExclude = groupJson.value("benchExclude", false);
 			if (groupJson.contains("when")) {
 				group.when = ParseMatch(groupJson["when"]);
 			}
@@ -170,6 +171,9 @@ namespace RPP::ClassifierEditor
 					j["benchKeyword"] = benches.front();
 				} else {
 					j["benchKeyword"] = benches;
+				}
+				if (group.benchExclude) {
+					j["benchExclude"] = true;
 				}
 			}
 

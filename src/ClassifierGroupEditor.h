@@ -35,6 +35,7 @@ namespace RPP::ClassifierEditor
 	{
 		std::array<char, 256> comment{};
 		std::vector<std::array<char, 64>> benchKeywords;
+		bool benchExclude = false;  // false = benchKeywords is a whitelist, true = a blacklist
 		EditableMatch when;
 		std::vector<EditableClassifierRule> rules;
 	};

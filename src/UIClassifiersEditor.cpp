@@ -413,6 +413,7 @@ namespace RPP::UI::ClassifiersEditor
 					"CraftingSmithingForge, CraftingSmelter, CraftingTanningRack). Leave empty "
 					"for any bench.");
 				RenderBenchKeywordList(a_group.benchKeywords, CandidatesForFormType(RE::FormType::Keyword), Indicator::Form, "bench keyword EditorID");
+				ImGui::Checkbox("Exclude (treat the list above as a blacklist instead of a whitelist)", &a_group.benchExclude);
 
 				ImGui::Spacing();
 				RenderMatchEditor("When (applies to every rule below)", a_group.when);
